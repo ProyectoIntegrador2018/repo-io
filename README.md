@@ -1,5 +1,5 @@
 # Repo I/O
-<img src="https://publicdomainvectors.org/photos/warszawianka_Cabbage.png" alt="drawing" style="width:50px;"/>
+<img src="https://publicdomainvectors.org/photos/warszawianka_Cabbage.png" width="100" height="100" />
 
 [![Maintainability](Link)](#)
 
