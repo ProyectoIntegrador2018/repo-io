@@ -1,7 +1,7 @@
 # Repo I/O
 <img src="https://publicdomainvectors.org/photos/warszawianka_Cabbage.png" width="100" height="100" />
   
-Plataforma web para revisar las contribuciones de un equipo en un repositorio.
+Web platform to review and display of elegant form the member contributions in a repo.
 
 ## Table of contents
 
@@ -51,27 +51,41 @@ You should ask for access to this tools if you don't have it already:
 * [Documentation](https://drive.google.com/drive/folders/1K7-i7_sWDcglDcQIgT5MQqzg0uxiZcvg?usp=sharing)
 
 ## Development
+
+### Windows
+* Install Ruby 2.6.1 with DevKit from https://rubyinstaller.org/downloads/
+* Install PostgreSQL version <= 10 from https://www.postgresql.org/download/windows/
+* On Cmd or PowerShell
+\
+`gem install rails -v 5.2.2.1`
+
+### Linux
 * RVM
 \
 `$ curl -sSL https://get.rvm.io | bash -s stable`
 * Ruby – Version 2.6.1
 \
 `$ rvm use ruby-2.6.1 --default`
-* Rails – Version 5.2.1
+* Rails – Version 5.2.2.1
 \
-`$ gem install rails -v 5.2.1`
+`$ gem install rails -v 5.2.2.1`
 
 ### Setup the project for development
 
-We will usedthe basic tools that come with rails. (rails server, test, and coonsole).
+We will use the basic tools that come with rails. (rails server, test, and coonsole).
 
 1. Clone this repository into your local machine
 
 ```bash
 $ git clone https://github.com/OscarMichelH/repo-io.git
 ```
+2. Install dependencies:
 
-2. Setup the database:
+```
+$ bundle install
+````
+
+3. Setup the database:
 ```
 $ rails db:drop
 $ rails db:create
@@ -79,7 +93,7 @@ $ rails db:migrate
 $ rails db:seed
 ```
 
-3. Start the application:
+4. Start the application:
 
 ```
 $ rails s
@@ -88,11 +102,18 @@ $ rails s
 Once you see an output like this:
 
 ```
-web_1   | => Booting Puma
-web_1   | => Rails 5.1.3 application starting in development on http://0.0.0.0:3000
-web_1   | => Run `rails server -h` for more startup options
-web_1   | => Ctrl-C to shutdown server
-web_1   | Listening on 0.0.0.0:3000, CTRL+C to stop
+=> Booting Puma
+=> Rails 5.2.2.1 application starting in development
+=> Run `rails server -h` for more startup options
+*** SIGUSR2 not implemented, signal based restart unavailable!
+*** SIGUSR1 not implemented, signal based restart unavailable!
+*** SIGHUP not implemented, signal based logs reopening unavailable!
+Puma starting in single mode...
+* Version 3.12.0 (ruby 2.6.1-p33), codename: Llamas in Pajamas
+* Min threads: 5, max threads: 5
+* Environment: development
+* Listening on tcp://0.0.0.0:3000
+Use Ctrl-C to stop
 ```
 
 This means the project is up and running.
