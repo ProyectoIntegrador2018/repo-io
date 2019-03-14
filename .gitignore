@@ -33,3 +33,15 @@ bower.json
 
 # Ignore pow environment settings
 .powenv
+
+\.idea/encodings\.xml
+
+\.idea/misc\.xml
+
+\.idea/repo-io\.iml
+
+\.idea/vcs\.xml
+
+\.idea/workspace\.xml
+
+config/database\.yml
