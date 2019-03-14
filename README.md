@@ -1,8 +1,6 @@
 # Repo I/O
 <img src="https://publicdomainvectors.org/photos/warszawianka_Cabbage.png" width="100" height="100" />
-
-[![Maintainability](Link)](#)
-
+  
 Plataforma web para revisar las contribuciones de un equipo en un repositorio.
 
 ## Table of contents
@@ -23,7 +21,7 @@ Plataforma web para revisar las contribuciones de un equipo en un repositorio.
 
 | Name               	    | Email             | Role                |
 | ------------------------- | ----------------- | ------------------  |
-|  Abraham Kuri Vargas | # | Profesor  |
+|  Abraham Kuri Vargas | kurenn@tec.mx  | Profesor  |
 
 
 ### Environment URLS
@@ -40,7 +38,7 @@ Plataforma web para revisar las contribuciones de un equipo en un repositorio.
 | Oscar Michel Herrera 	| oscarmichelh@gmail.com	| Development |
 | Edgar Daniel Bustillos Rivera | a01113146@itesm.mx	| Development |
 | Daniel Zavala Salazar | dzavala94@gmail.com	| Scrum Master |
-| Miguel Ángel Alvarado López| mikealvaradol06@gmail.com | Product Owner |
+| Miguel Angel Alvarado López| a01400121@itesm.mx | Product Owner |
 
 ### Management tools
 
