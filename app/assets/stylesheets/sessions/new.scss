@@ -1,0 +1,104 @@
+body {
+  background-color: white;
+}
+
+.panel {
+  background-color: transparent;
+}
+
+.panel-body {
+  padding-top: 30px;
+  background-color: rgba(2555,255,255,.3);
+}
+
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
+
+
+//Button
+.btn-item {
+  padding-top: 400px;
+}
+
+
+ul{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0;
+  display: flex;
+
+}
+ul li{
+  list-style: none;
+  margin: 0 40px;
+
+}
+ul li .fa{
+  font-size: 40px;
+  color: #262626;
+  line-height: 80px;
+  transition: .5s;
+
+}
+ul li a{
+  position: relative;
+  display: block;
+  width: 80px;
+  height: 80px;
+  background-color: #fff;
+  text-align: center;
+  transform: perspective(100px) rotate(-30deg) skew(25deg) translate(0,0);
+  transition: .5s;
+  box-shadow: -20px 20px 10px rgb(0, 0, 0);
+}
+ul li a::before{
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: -20px;
+  height: 100%;
+  width: 20px;
+  background: #b1b1b1;
+  transition: .5s;
+  transform: rotate(0deg) skewY(-45deg);
+}
+ul li a::after{
+  content: "";
+  position: absolute;
+  top: 80px;
+  left: -11px;
+  height: 20px;
+  width: 100%;
+  background: #b1b1b1;
+  transition: .5s;
+  transform: rotate(0deg) skewX(-45deg);
+}
+ul li a:hover{
+  transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(20px, -20px);
+  box-shadow: -50px 50px 50px rgb(0, 0, 0);
+}
+ul li:hover .fa{
+  color: #fff;
+}
+ul li a:hover{
+  transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(20px, -20px);
+  box-shadow: -50px 50px 50px rgb(0, 0, 0);
+}
+ul li:hover:nth-child(1) a{
+  background: #656464;
+}
+
+ul li:hover:nth-child(1) a:before{
+  background: #545454;
+}
+ul li:hover:nth-child(1) a:after{
+  background: #6D6D6D;
+}

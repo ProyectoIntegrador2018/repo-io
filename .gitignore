@@ -45,3 +45,11 @@ bower.json
 \.idea/workspace\.xml
 
 config/database\.yml
+
+\.idea/\.generators
+
+\.idea/\.rakeTasks
+
+\.idea/modules\.xml
+
+\.idea/inspectionProfiles/Project_Default\.xml
