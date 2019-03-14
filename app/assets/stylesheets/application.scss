@@ -1,3 +1,6 @@
-// Custom bootstrap variables must be set or imported *before* bootstrap.
-@import "sessions/new";
+/*
+*= require_tree .
+*= require_self
+*/
+@import "./sessions/new";
 @import "bootstrap";
