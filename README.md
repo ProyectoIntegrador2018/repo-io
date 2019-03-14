@@ -1,6 +1,6 @@
 # Repo I/O
-<img src="https://publicdomainvectors.org/photos/warszawianka_Cabbage.png" width="100" height="100" />
-  
+<img src="https://i.imgur.com/MrwhQ2D.png" width="100" height="100" />
+ 
 Web platform to review and display of elegant form the member contributions in a repo.
 
 ## Table of contents
@@ -26,8 +26,8 @@ Web platform to review and display of elegant form the member contributions in a
 
 ### Environment URLS
 
-* **Production** - [localhost:3000](localhost:3000)
-* **Development** - [Site](#)
+* **Production** - [Site](http://repository-io.herokuapp.com) 
+* **Development** - [localhost:3000](localhost:3000)
 
 ### Equipos de desarrollo
 
