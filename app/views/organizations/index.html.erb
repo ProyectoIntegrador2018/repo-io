@@ -1,0 +1,41 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Organizations</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Github</th>
+      <th>Url</th>
+      <th>Name</th>
+      <th>Company</th>
+      <th>Public repos</th>
+      <th>Private repos</th>
+      <th>Total repos</th>
+      <th>Collaborators</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @organizations.each do |organization| %>
+      <tr>
+        <td><%= organization.github_id %></td>
+        <td><%= organization.url %></td>
+        <td><%= organization.name %></td>
+        <td><%= organization.company %></td>
+        <td><%= organization.public_repos %></td>
+        <td><%= organization.private_repos %></td>
+        <td><%= organization.total_repos %></td>
+        <td><%= organization.collaborators %></td>
+        <td><%= link_to 'Show', organization %></td>
+        <td><%= link_to 'Edit', edit_organization_path(organization) %></td>
+        <td><%= link_to 'Destroy', organization, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Organization', new_organization_path %>
