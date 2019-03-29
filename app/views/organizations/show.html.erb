@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Github:</strong>
+  <%= @organization.github_id %>
+</p>
+
+<p>
+  <strong>Url:</strong>
+  <%= @organization.url %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @organization.name %>
+</p>
+
+<p>
+  <strong>Company:</strong>
+  <%= @organization.company %>
+</p>
+
+<p>
+  <strong>Public repos:</strong>
+  <%= @organization.public_repos %>
+</p>
+
+<p>
+  <strong>Private repos:</strong>
+  <%= @organization.private_repos %>
+</p>
+
+<p>
+  <strong>Total repos:</strong>
+  <%= @organization.total_repos %>
+</p>
+
+<p>
+  <strong>Collaborators:</strong>
+  <%= @organization.collaborators %>
+</p>
+
+<%= link_to 'Edit', edit_organization_path(@organization) %> |
+<%= link_to 'Back', organizations_path %>
