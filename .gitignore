@@ -53,3 +53,6 @@ config/database\.yml
 \.idea/modules\.xml
 
 \.idea/inspectionProfiles/Project_Default\.xml
+
+# Ignore application configuration
+/config/application.yml

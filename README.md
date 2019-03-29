@@ -1,6 +1,6 @@
 # Repo I/O
-<img src="https://publicdomainvectors.org/photos/warszawianka_Cabbage.png" width="100" height="100" />
-  
+<img src="https://i.imgur.com/MrwhQ2D.png" width="100" height="100" />
+ 
 Web platform to review and display of elegant form the member contributions in a repo.
 
 ## Table of contents
@@ -12,6 +12,7 @@ Web platform to review and display of elegant form the member contributions in a
 * [Development](#development)
 * [Setup the project for development](#setup-the-project-for-development)
 * [Stop the project](#stop-the-project)
+* [Developer Settings](#developer-settings)
 * [Debugging](#debugging)
 * [Running tests](#running-tests)
 * [Checking code for potential issues](#checking-code-for-potential-issues)
@@ -26,8 +27,8 @@ Web platform to review and display of elegant form the member contributions in a
 
 ### Environment URLS
 
-* **Production** - [localhost:3000](localhost:3000)
-* **Development** - [Site](#)
+* **Production** - [Site](http://repository-io.herokuapp.com) 
+* **Development** - [localhost:3000](localhost:3000)
 
 ### Equipos de desarrollo
 
@@ -121,6 +122,14 @@ This means the project is up and running.
 ### Stop the project
 
 In order to stop the project just hit Ctrl-C on the terminal where rails server is running.
+
+### Developer Settings
+Execute
+``` sh
+bundle exec figaro install
+```
+This will generate the file *config/application.yml*
+- Add here secret keys
 
 ### Running tests
 
