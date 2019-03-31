@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :authors
+  resources :commits
   resources :organizations
   resources :repositories
   get "/auth/:provider/callback", to: "sessions#create"

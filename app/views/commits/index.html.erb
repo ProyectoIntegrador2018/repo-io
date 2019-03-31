@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Commits</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Additions</th>
+      <th>Deletions</th>
+      <th>Changed files</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @commits.each do |commit| %>
+      <tr>
+        <td><%= commit.title %></td>
+        <td><%= commit.description %></td>
+        <td><%= commit.additions %></td>
+        <td><%= commit.deletions %></td>
+        <td><%= commit.changed_files %></td>
+        <td><%= link_to 'Show', commit %></td>
+        <td><%= link_to 'Edit', edit_commit_path(commit) %></td>
+        <td><%= link_to 'Destroy', commit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Commit', new_commit_path %>
