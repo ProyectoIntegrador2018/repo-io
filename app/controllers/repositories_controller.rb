@@ -5,7 +5,7 @@ class RepositoriesController < ApplicationController
   # GET /repositories
   # GET /repositories.json
   def index
-    @repositories = Repository.all
+    set_initial_variables
   end
 
   # GET /repositories/1
@@ -91,11 +91,6 @@ end
 
 
 
-  # GET /repositories/new
-  def new
-    @repository = Repository.new
-  end
-
   # GET /repositories/1/edit
   def edit
   end
@@ -149,5 +144,27 @@ end
     # Never trust parameters from the scary internet, only allow the white list through.
     def repository_params
       params.require(:repository).permit(:github_id, :url, :name, :full_name, :description, :size, :collaborator)
+    end
+
+    def set_initial_variables
+      github = Octokit::Client.new access_token: current_user.oauth_token
+      repos = Repository.all.to_a
+      github.repos.each do |item|
+        if !Repository.where(github_id: item.id).any?
+          repo = Repository.new
+          repo.github_id = item.id
+          repo.url = item.url
+          repo.name = item.name
+          repo.full_name = item.full_name
+          repo.description = item.description
+          repo.size = item.size
+          repo.collaborator = item.collaborator
+          repos.push(repo)
+        end
+      end
+
+      @repositories = repos
+      @repo = Repository.new
+      # @site = github.oauth.login
     end
 end
