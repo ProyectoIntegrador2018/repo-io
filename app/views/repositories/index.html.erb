@@ -1,14 +1,15 @@
 <p id="notice"><%= notice %></p>
 
 <h1>Repositories</h1>
+<h5><%= @site %></h5>
 <%= button_to "Sign Out", signout_path, method: :delete, class: 'fa fa-github' %>
 
 <table>
   <thead>
     <tr>
       <th>Github</th>
-      <th>Url</th>
       <th>Name</th>
+      <th>Url</th>
       <th>Full name</th>
       <th>Description</th>
       <th>Size</th>
@@ -19,18 +20,46 @@
 
   <tbody>
     <% @repositories.each do |repository| %>
+    <%= form_for @repo do |f| %>
       <tr>
         <td><%= repository.github_id %></td>
+        <%= f.hidden_field :github_id, value: repository.github_id %>
+
+        <% if Repository.where(github_id: repository.github_id).any? %>
+          <td> <%= link_to repository.name, repository %></td>
+        <% else %>
+          <td><%= repository.name %></td>
+          <%= f.hidden_field :name, value: repository.name %>
+        <% end %>
+
         <td><%= repository.url %></td>
-        <td><%= repository.name %></td>
+        <%= f.hidden_field :url, value: repository.url %>
+
         <td><%= repository.full_name %></td>
+        <%= f.hidden_field :full_name, value: repository.full_name %>
+
         <td><%= repository.description %></td>
+        <%= f.hidden_field :description, value: repository.description %>
+
         <td><%= repository.size %></td>
+        <%= f.hidden_field :size, value: repository.size %>
+
         <td><%= repository.collaborator %></td>
-        <td><%= link_to 'Show', repository %></td>
-        <td><%= link_to 'Edit', edit_repository_path(repository) %></td>
-        <td><%= link_to 'Destroy', repository, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <%= f.hidden_field :collaborator, value: repository.collaborator %>
+
+        <td>
+          <% if !Repository.where(github_id: repository.github_id).any? %>
+            <%= button_tag 'Add', class: 'button is-success'%>
+          <% end %>
+        </td>
+
+        <td>
+          <% if Repository.where(github_id: repository.github_id).any? %>
+          <%= link_to 'Delete', repository, method: :delete, data: { confirm: 'Are you sure?' } %>
+          <% end %>
+        </td>
       </tr>
+    <% end %>
     <% end %>
   </tbody>
 </table>
