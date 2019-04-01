@@ -67,6 +67,4 @@ gem 'figaro'
 source 'https://rails-assets.org' do
     gem 'rails-assets-jquery'
     gem 'rails-assets-bootstrap'
-    gem 'rails-assets-materialize'
-
 end

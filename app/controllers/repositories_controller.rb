@@ -12,9 +12,13 @@ class RepositoriesController < ApplicationController
   def show
 
      #@username = current_user.username
+     @username = "Ed"
 
       @chart = LazyHighCharts::HighChart.new('pie') do |f|
-          f.chart({:defaultSeriesType=>"pie" , :margin=> [50, 200, 60, 170]} )
+          f.chart({:defaultSeriesType=>"pie" ,
+               :margin=> [50, 200, 60, 170] ,height: '800'},
+
+            )
           series = {
                    :type=> 'pie',
                    :name=> 'percentage contribution',

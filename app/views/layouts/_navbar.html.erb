@@ -1,6 +1,20 @@
 <nav class="navbar navbar-light bg-light fixed-top">
   <span class="navbar-brand mb-0 h1 float-left">Repo - io</span>
-  <span class=" h3 float-right" ><%= @username %> </span>
+  <div class=" float-right" >
+
+
+
+      <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle h5" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <%= @username %>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <%= button_to "Sign Out", signout_path, method: :delete, class: 'dropdown-item', type:'button' %>
+          </div>
+      </div>
+    </div>
+
+
 </nav>
 
 <br>
