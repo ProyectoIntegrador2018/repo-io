@@ -5,15 +5,45 @@ class RepositoriesController < ApplicationController
   # GET /repositories
   # GET /repositories.json
   def index
+     @username = current_user.username
     set_initial_variables
   end
 
   # GET /repositories/1
   # GET /repositories/1.json
   def show
+     github = Octokit::Client.new access_token: current_user.oauth_token
+     @id = @repository.id
+     repop = github.repo @repository.full_name
+     total = 0
+     if repop
+         @name_repo = repop.full_name
+         commits = github.commits @name_repo
+         @data=Hash.new
 
-     #@username = current_user.username
-     @username = "Ed"
+         commits.each do |c|
+             cTemp = github.commit @name_repo, c.sha
+             if @data.has_key? cTemp.commit.author.email
+                 @data[cTemp.commit.author.email]["name"] =cTemp.commit.author.name.to_s
+                @data[cTemp.commit.author.email]["additions"] = @data[cTemp.commit.author.email]["additions"].to_i +  cTemp.stats.additions.to_i
+                @data[cTemp.commit.author.email]["deletions"] = @data[cTemp.commit.author.email]["deletions"].to_i + cTemp.stats.deletions.to_i
+                @data[cTemp.commit.author.email]["modified"] = @data[cTemp.commit.author.email]["modified"].to_i + cTemp.stats.modifiedw.to_i
+             else
+                 @data[cTemp.commit.author.email] = {
+                     name: cTemp.commit.author.name.to_s,
+                     additions: cTemp.stats.additions.to_i,
+                     deletions: cTemp.stats.deletions.to_i,
+                     modified: cTemp.stats.modified.to_i
+                }
+            end
+
+        end
+        # @name_repo = repop.full_name
+    else
+        @name_repo = "POOOOP"
+    end
+     @username = current_user.username
+
 
       @chart = LazyHighCharts::HighChart.new('pie') do |f|
           f.chart({:defaultSeriesType=>"pie" ,
@@ -44,47 +74,47 @@ class RepositoriesController < ApplicationController
             }
           })
       end
+      @data_in_series = []
+      @data.each do |key,value|
+          @data_in_series.push([value["name"],value["additions"] + value["modified"]])
+
+      end
+      
 
       @chart2 = LazyHighCharts::HighChart.new('pie') do |c|
-     c.chart(
-        plotBackgroundColor: nil,
-        plotBorderWidth: nil,
-        plotShadow: false,
-        type: 'pie'
-    )
-    c.title(
-        text: 'Contributions to repo'
-    )
-    c.tooltip(
-        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-    )
-    #c.options[:chart][:height] = 800
-    #c.options[:chart][:width] = 800
-    c.plotOptions(
-        pie: {
-            allowPointSelect: true,
-            cursor: 'pointer',
-            dataLabels: {
-                enabled: true,
-                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                style: {
-                    color: 'black'
+         c.chart(
+            plotBackgroundColor: nil,
+            plotBorderWidth: nil,
+            plotShadow: false,
+            type: 'pie'
+        )
+        c.title(
+            text: 'Contributions to repo'
+        )
+        c.tooltip(
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        )
+        #c.options[:chart][:height] = 800
+        #c.options[:chart][:width] = 800
+        c.plotOptions(
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: 'black'
+                    }
                 }
             }
-        }
-    )
-    c.series(
-        :type=> 'pie',
-        :name=> 'percentage contribution',
-        :data=> [
-           ['Sam',   45.0],
-           ['Pedro',       15.0],
-           ['Juan',   30.0],
-           ['Thomas',    5.0],
-           ['Jeff',   5.0]
-           ])
-
-   end
+        )
+        c.series(
+            :type=> 'pie',
+            :name=> 'percentage contribution',
+            :data=> @data_in_series
+        )
+    end
 end
 
 
