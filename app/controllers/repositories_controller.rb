@@ -11,7 +11,8 @@ class RepositoriesController < ApplicationController
   # GET /repositories/1
   # GET /repositories/1.json
   def show
-
+     github = Octokit::Client.new access_token: current_user.oauth_token
+     @id = @repository.id
      #@username = current_user.username
      @username = "Ed"
 
