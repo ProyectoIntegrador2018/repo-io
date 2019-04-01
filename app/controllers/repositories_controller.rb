@@ -53,13 +53,13 @@ class RepositoriesController < ApplicationController
         type: 'pie'
     )
     c.title(
-        text: 'Browser market shares in January, 2018'
+        text: 'Contributions to repo'
     )
     c.tooltip(
         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
     )
-    c.options[:chart][:height] = 800
-    c.options[:chart][:width] = 800
+    #c.options[:chart][:height] = 800
+    #c.options[:chart][:width] = 800
     c.plotOptions(
         pie: {
             allowPointSelect: true,
