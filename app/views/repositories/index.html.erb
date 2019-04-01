@@ -1,6 +1,22 @@
-<p id="notice"><%= notice %></p>
+
 
 <div class="container ">
+    <% if false %>
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <img src="..." class="rounded mr-2" alt="...">
+            <strong class="mr-auto">Notification</strong>
+            <small>Just now</small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="toast-body">
+            <p id=notice><%= notice %></p>
+          </div>
+        </div>
+    <% end %>
+
     <div class="row">
         <div class="col-12 col-sm-12 py-5 px-5 ">
             <h1 class="text-center">Repositories</h1>
@@ -8,15 +24,15 @@
     </div>
     <div class="row bg-light">
 
-        <div class="col-12 py-5 px-5  m">
-            <div class="dropdown allign-center x-auto">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Dropdown button
+        <div class="col-12 py-5 px-5 ">
+            <div class="dropdown allign-center">
+                <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Organizations
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item" href="#">Org 1</a>
+                    <a class="dropdown-item" href="#">Org 2</a>
+                    <a class="dropdown-item" href="#">Org 3</a>
                 </div>
             </div>
         </div>
@@ -45,11 +61,14 @@
 
 
                                     <div class="col-4">
-                                        <a href="/<%= repository.name%>" class="disabled" aria-disabled='true'>
-                                            <%=repository.name%>
-                                        </a>
+                                        <p><%=repository.name%></p>
+
+
                                     </div>
-                                    <div class="col-8">
+                                    <div class="col-4">
+                                        <em><%= repository.url %></em>
+                                    </div>
+                                    <div class="col-4">
                                         <%= f.hidden_field :github_id, value: repository.github_id %>
                                         <%= f.hidden_field :name, value: repository.name %>
                                         <%= f.hidden_field :url, value: repository.url %>
@@ -57,30 +76,16 @@
                                         <%= f.hidden_field :description, value: repository.description %>
                                         <%= f.hidden_field :size, value: repository.size %>
                                         <%= f.hidden_field :collaborator, value: repository.collaborator %>
-                                        <%= button_tag 'Add', class: 'button is-success float-right">'%>
+                                        <%= button_tag 'Add', class: 'button is-success float-right' %>
                                     </div>
                                 <% end %>
                             </div>
                         </li>
                     <% end %>
                 <% end %>
-
-
-
-
-
-
-
-
-
-
             </ul>
 
-
             <h5><%= @site %></h5>
-
-
-
 
         </div>
     </div>
@@ -89,5 +94,6 @@
 
 
 <br>
-
+<% if false %>
 <%= link_to 'New Repository', new_repository_path %>
+<% end %>
