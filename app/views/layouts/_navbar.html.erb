@@ -1,0 +1,21 @@
+<% if current_user %>
+<ul class="navbar navbar-light bg-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand mb-0 h1 float-left" href="/repositories">Repo - io</a>
+        <div class=" float-right" >
+
+
+
+
+          <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle h5" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                 <%= @username %>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                  <%= button_to "Sign Out", signout_path, method: :delete, class: 'dropdown-item', type:'button' %>
+              </div>
+          </div>
+        </div>
+    </div>
+</ul>
+<% end %>

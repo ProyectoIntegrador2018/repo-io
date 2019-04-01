@@ -1,21 +1,95 @@
 class RepositoriesController < ApplicationController
+  before_action :require_login
   before_action :set_repository, only: [:show, :edit, :update, :destroy]
 
   # GET /repositories
   # GET /repositories.json
   def index
-    @repositories = Repository.all
+    set_initial_variables
   end
 
   # GET /repositories/1
   # GET /repositories/1.json
   def show
-  end
 
-  # GET /repositories/new
-  def new
-    @repository = Repository.new
-  end
+     #@username = current_user.username
+     @username = "Ed"
+
+      @chart = LazyHighCharts::HighChart.new('pie') do |f|
+          f.chart({:defaultSeriesType=>"pie" ,
+               :margin=> [50, 200, 60, 170]},
+
+            )
+
+          f.series(
+              :type=> 'pie',
+              :name=> 'percentage contribution',
+              :data=> [
+                 ['Sam',   45.0],
+                 ['Pedro',       15.0],
+                 ['Juan',   30.0],
+                 ['Thomas',    5.0],
+                 ['Jeff',   5.0]
+                 ])
+          f.legend(:layout=> 'vertical',:style=> {:left=> 'auto', :bottom=> 'auto',:right=> '50px',:top=> '100px'})
+          f.plot_options(:pie=>{
+            :allowPointSelect=>true,
+            :cursor=>"pointer" ,
+            :dataLabels=>{
+              :enabled=>true,
+              :color=>"black",
+              :style=>{
+                :font=>"13px Trebuchet MS, Verdana, sans-serif"
+              }
+            }
+          })
+      end
+
+      @chart2 = LazyHighCharts::HighChart.new('pie') do |c|
+     c.chart(
+        plotBackgroundColor: nil,
+        plotBorderWidth: nil,
+        plotShadow: false,
+        type: 'pie'
+    )
+    c.title(
+        text: 'Contributions to repo'
+    )
+    c.tooltip(
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    )
+    #c.options[:chart][:height] = 800
+    #c.options[:chart][:width] = 800
+    c.plotOptions(
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                style: {
+                    color: 'black'
+                }
+            }
+        }
+    )
+    c.series(
+        :type=> 'pie',
+        :name=> 'percentage contribution',
+        :data=> [
+           ['Sam',   45.0],
+           ['Pedro',       15.0],
+           ['Juan',   30.0],
+           ['Thomas',    5.0],
+           ['Jeff',   5.0]
+           ])
+
+   end
+end
+
+
+
+
 
   # GET /repositories/1/edit
   def edit
@@ -70,5 +144,27 @@ class RepositoriesController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def repository_params
       params.require(:repository).permit(:github_id, :url, :name, :full_name, :description, :size, :collaborator)
+    end
+
+    def set_initial_variables
+      github = Octokit::Client.new access_token: current_user.oauth_token
+      repos = Repository.all.to_a
+      github.repos.each do |item|
+        if !Repository.where(github_id: item.id).any?
+          repo = Repository.new
+          repo.github_id = item.id
+          repo.url = item.html_url
+          repo.name = item.name
+          repo.full_name = item.full_name
+          repo.description = item.description
+          repo.size = item.size
+          repo.collaborator = item.collaborator
+          repos.push(repo)
+        end
+      end
+
+      @repositories = repos
+      @repo = Repository.new
+      # @site = github.oauth.login
     end
 end
