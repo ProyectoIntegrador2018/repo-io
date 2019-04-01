@@ -13,6 +13,33 @@ class RepositoriesController < ApplicationController
   def show
      github = Octokit::Client.new access_token: current_user.oauth_token
      @id = @repository.id
+     repop = github.repo @repository.full_name
+     if repop
+         @name_repo = repop.full_name
+         commits = github.commits @name_repo
+         @data=Hash.new
+
+         commits.each do |c|
+             cTemp = github.commit @name_repo, c.sha
+             if @data.has_key? cTemp.commit.author.email
+                 @data[cTemp.commit.author.email]["name"] =cTemp.commit.author.name.to_s
+                @data[cTemp.commit.author.email]["additions"] = @data[cTemp.commit.author.email]["additions"].to_i +  cTemp.stats.additions.to_i
+                @data[cTemp.commit.author.email]["deletions"] = @data[cTemp.commit.author.email]["deletions"].to_i + cTemp.stats.deletions.to_i
+                @data[cTemp.commit.author.email]["modified"] = @data[cTemp.commit.author.email]["modified"].to_i + cTemp.stats.modifiedw.to_i
+             else
+                 @data[cTemp.commit.author.email] = {
+                     name: cTemp.commit.author.name.to_s,
+                     additions: cTemp.stats.additions.to_i,
+                     deletions: cTemp.stats.deletions.to_i,
+                     modified: cTemp.stats.modified.to_i
+                }
+            end
+
+        end
+        # @name_repo = repop.full_name
+    else
+        @name_repo = "POOOOP"
+    end
      #@username = current_user.username
      @username = "Ed"
 

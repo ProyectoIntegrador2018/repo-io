@@ -47,7 +47,7 @@
                             <div class="row">
                                 <% if Repository.where(github_id: repository.github_id).any? %>
                                     <div class="col-4">
-                                        <a href="/<%= repository.name%>">
+                                        <a href="/repositories/<%= repository.id%>">
                                             <strong><%=repository.name%></strong>
                                         </a>
                                     </div>
