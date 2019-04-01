@@ -21,9 +21,6 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 # Omniauth-github
 gem 'omniauth-github'
-#Bootstrap
-gem 'jquery-rails'
-gem 'bootstrap', '~> 4.3.1'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
@@ -62,3 +59,9 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'figaro'
+
+source 'https://rails-assets.org' do
+  gem 'rails-assets-bootstrap'
+  gem 'rails-assets-materialize'
+  gem 'rails-assets-jquery'
+end
