@@ -1,20 +1,21 @@
-<nav class="navbar navbar-light bg-light fixed-top">
-  <span class="navbar-brand mb-0 h1 float-left">Repo - io</span>
-  <div class=" float-right" >
+<ul class="navbar navbar-light bg-light fixed-top">
+    <div class="container">
+        <span class="navbar-brand mb-0 h1 float-left">Repo - io</span>
+        <div class=" float-right" >
 
 
 
-      <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle h5" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-             <%= @username %>
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-              <%= button_to "Sign Out", signout_path, method: :delete, class: 'dropdown-item', type:'button' %>
+
+          <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle h5" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                 <%= @username %>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                  <%= button_to "Sign Out", signout_path, method: :delete, class: 'dropdown-item', type:'button' %>
+              </div>
           </div>
-      </div>
+        </div>
     </div>
-
-
-</nav>
+</ul>
 
 <br>

@@ -1,8 +1,10 @@
-<%= render '/layouts/navbar' %>
+<%= render 'layouts/navbar'%>
+<br>
 <div class="container-fluid">
+
     <div class="row">
         <div class="col-sm-12 py-5 px-lg-5 ">
-            <h1 class="text-center fixed-top"><%= @repository.name %></h1>
+            <h1 class="text-center "><%= @repository.name %></h1>
             <p class="text-center"><%= @repository.description %></p>
         </div>
         <div class="col-sm-12">
@@ -12,8 +14,7 @@
     </div>
     <div class="row">
         <div class="col-sm-4">
-                    <%= high_chart("some_id", @chart) %>
-
+                    <%= high_chart("some_id", @chart2) %>
         </div>
         <div class="col-sm-7 offset-sm-1 ">
             <div class="card">
