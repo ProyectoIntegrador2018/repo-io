@@ -13,8 +13,14 @@
 //= require rails-ujs
 //= require activestorage
 //= require turbolinks
-//= require jquery
 //= require sessions_new.js
+//= require jquery
 //= require bootstrap
-//= require materialize
+
+//= require highcharts/highcharts
+//= require highcharts/highcharts-more
+//= require highcharts/modules/no-data-to-display
+
 //= require_tree .
+
+

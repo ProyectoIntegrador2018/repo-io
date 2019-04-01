@@ -11,7 +11,85 @@ class RepositoriesController < ApplicationController
   # GET /repositories/1
   # GET /repositories/1.json
   def show
-  end
+
+     #@username = current_user.username
+     @username = "Ed"
+
+      @chart = LazyHighCharts::HighChart.new('pie') do |f|
+          f.chart({:defaultSeriesType=>"pie" ,
+               :margin=> [50, 200, 60, 170]},
+
+            )
+
+          f.series(
+              :type=> 'pie',
+              :name=> 'percentage contribution',
+              :data=> [
+                 ['Sam',   45.0],
+                 ['Pedro',       15.0],
+                 ['Juan',   30.0],
+                 ['Thomas',    5.0],
+                 ['Jeff',   5.0]
+                 ])
+          f.legend(:layout=> 'vertical',:style=> {:left=> 'auto', :bottom=> 'auto',:right=> '50px',:top=> '100px'})
+          f.plot_options(:pie=>{
+            :allowPointSelect=>true,
+            :cursor=>"pointer" ,
+            :dataLabels=>{
+              :enabled=>true,
+              :color=>"black",
+              :style=>{
+                :font=>"13px Trebuchet MS, Verdana, sans-serif"
+              }
+            }
+          })
+      end
+
+      @chart2 = LazyHighCharts::HighChart.new('pie') do |c|
+     c.chart(
+        plotBackgroundColor: nil,
+        plotBorderWidth: nil,
+        plotShadow: false,
+        type: 'pie'
+    )
+    c.title(
+        text: 'Contributions to repo'
+    )
+    c.tooltip(
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    )
+    #c.options[:chart][:height] = 800
+    #c.options[:chart][:width] = 800
+    c.plotOptions(
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                style: {
+                    color: 'black'
+                }
+            }
+        }
+    )
+    c.series(
+        :type=> 'pie',
+        :name=> 'percentage contribution',
+        :data=> [
+           ['Sam',   45.0],
+           ['Pedro',       15.0],
+           ['Juan',   30.0],
+           ['Thomas',    5.0],
+           ['Jeff',   5.0]
+           ])
+
+   end
+end
+
+
+
+
 
   # GET /repositories/1/edit
   def edit
@@ -75,7 +153,7 @@ class RepositoriesController < ApplicationController
         if !Repository.where(github_id: item.id).any?
           repo = Repository.new
           repo.github_id = item.id
-          repo.url = item.url
+          repo.url = item.html_url
           repo.name = item.name
           repo.full_name = item.full_name
           repo.description = item.description

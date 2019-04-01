@@ -1,69 +1,97 @@
-<p id="notice"><%= notice %></p>
 
-<h1>Repositories</h1>
-<h5><%= @site %></h5>
-<%= button_to "Sign Out", signout_path, method: :delete, class: 'fa fa-github' %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Github</th>
-      <th>Name</th>
-      <th>Url</th>
-      <th>Full name</th>
-      <th>Description</th>
-      <th>Size</th>
-      <th>Collaborator</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @repositories.each do |repository| %>
-    <%= form_for @repo do |f| %>
-      <tr>
-        <td><%= repository.github_id %></td>
-        <%= f.hidden_field :github_id, value: repository.github_id %>
-
-        <% if Repository.where(github_id: repository.github_id).any? %>
-          <td> <%= link_to repository.name, repository %></td>
-        <% else %>
-          <td><%= repository.name %></td>
-          <%= f.hidden_field :name, value: repository.name %>
-        <% end %>
-
-        <td><%= repository.url %></td>
-        <%= f.hidden_field :url, value: repository.url %>
-
-        <td><%= repository.full_name %></td>
-        <%= f.hidden_field :full_name, value: repository.full_name %>
-
-        <td><%= repository.description %></td>
-        <%= f.hidden_field :description, value: repository.description %>
-
-        <td><%= repository.size %></td>
-        <%= f.hidden_field :size, value: repository.size %>
-
-        <td><%= repository.collaborator %></td>
-        <%= f.hidden_field :collaborator, value: repository.collaborator %>
-
-        <td>
-          <% if !Repository.where(github_id: repository.github_id).any? %>
-            <%= button_tag 'Add', class: 'button is-success'%>
-          <% end %>
-        </td>
-
-        <td>
-          <% if Repository.where(github_id: repository.github_id).any? %>
-          <%= link_to 'Delete', repository, method: :delete, data: { confirm: 'Are you sure?' } %>
-          <% end %>
-        </td>
-      </tr>
+<div class="container ">
+    <% if false %>
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <img src="..." class="rounded mr-2" alt="...">
+            <strong class="mr-auto">Notification</strong>
+            <small>Just now</small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="toast-body">
+            <p id=notice><%= notice %></p>
+          </div>
+        </div>
     <% end %>
-    <% end %>
-  </tbody>
-</table>
+
+    <div class="row">
+        <div class="col-12 col-sm-12 py-5 px-5 ">
+            <h1 class="text-center">Repositories</h1>
+        </div>
+    </div>
+    <div class="row bg-light">
+
+        <div class="col-12 py-5 px-5 ">
+            <div class="dropdown allign-center">
+                <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Organizations
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#">Org 1</a>
+                    <a class="dropdown-item" href="#">Org 2</a>
+                    <a class="dropdown-item" href="#">Org 3</a>
+                </div>
+            </div>
+        </div>
+        <h5><%= @site %></h5>
+
+        <div class="col-12 py-5 px-5">
+            <div class="list-group">
+                <% @repositories.each do |repository| %>
+
+                    <%= form_for @repo do |f| %>
+                        <li class="container-fluid list-group-item">
+                            <div class="row">
+                                <% if Repository.where(github_id: repository.github_id).any? %>
+                                    <div class="col-4">
+                                      <strong><%= link_to repository.name, repository %></strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <em><%= repository.url %></em>
+                                    </div>
+                                    <div class="col-4 ">
+                                        <%= link_to 'Delete', repository, class:"float-right", method: :delete, data: { confirm: 'Are you sure?' } %>
+                                    </div>
+                                <% else %>
+
+
+                                    <div class="col-4">
+                                        <p><%=repository.name%></p>
+
+
+                                    </div>
+                                    <div class="col-4">
+                                        <em><%= repository.url %></em>
+                                    </div>
+                                    <div class="col-4">
+                                        <%= f.hidden_field :github_id, value: repository.github_id %>
+                                        <%= f.hidden_field :name, value: repository.name %>
+                                        <%= f.hidden_field :url, value: repository.url %>
+                                        <%= f.hidden_field :full_name, value: repository.full_name %>
+                                        <%= f.hidden_field :description, value: repository.description %>
+                                        <%= f.hidden_field :size, value: repository.size %>
+                                        <%= f.hidden_field :collaborator, value: repository.collaborator %>
+                                        <%= button_tag 'Add', class: 'button is-success float-right' %>
+                                    </div>
+                                <% end %>
+                            </div>
+                        </li>
+                    <% end %>
+                <% end %>
+            </ul>
+
+            <h5><%= @site %></h5>
+
+        </div>
+    </div>
+</div>
+
+
 
 <br>
-
+<% if false %>
 <%= link_to 'New Repository', new_repository_path %>
+<% end %>

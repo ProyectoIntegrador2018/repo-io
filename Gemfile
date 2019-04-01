@@ -22,6 +22,10 @@ gem 'jbuilder', '~> 2.5'
 # Omniauth-github
 gem 'omniauth-github'
 
+#highcharts
+gem 'lazy_high_charts'
+
+
 gem "octokit", "~> 4.0"
 
 # Use Redis adapter to run Action Cable in production
@@ -64,7 +68,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'figaro'
 
 source 'https://rails-assets.org' do
-  gem 'rails-assets-bootstrap'
-  gem 'rails-assets-materialize'
-  gem 'rails-assets-jquery'
+    gem 'rails-assets-jquery'
+    gem 'rails-assets-bootstrap'
 end
