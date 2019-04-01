@@ -2,14 +2,7 @@
 <html>
 	<%= render partial: '/layouts/head', locals: { manifest: 'application' } %>
   <body>
-
-
-      <%= render 'layouts/navbar'%>
-      <br>
-
-        <%= yield %>
-
-
-
+    <%= render 'layouts/navbar'%>
+    <%= yield %>
   </body>
 </html>

@@ -181,7 +181,7 @@ end
         if !Repository.where(github_id: item.id).any?
           repo = Repository.new
           repo.github_id = item.id
-          repo.url = item.url
+          repo.url = item.html_url
           repo.name = item.name
           repo.full_name = item.full_name
           repo.description = item.description
