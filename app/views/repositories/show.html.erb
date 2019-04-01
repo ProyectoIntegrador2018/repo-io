@@ -6,9 +6,7 @@
             <h1 class="text-center "><%= @repository.name %></h1>
             <p class="text-center"><%= @repository.description %></p>
         </div>
-        <div class="col-sm-12">
-
-        </div>
+        
 
     </div>
     <div class="row">
@@ -21,21 +19,18 @@
                     <div class="card-title text-center "> Colaboradores</div>
 
                     <ul class="list-group" data-spy="scroll" style="overflow: scroll; max-height: 300px;">
-                        <li class="list-group-item">Cras justo odio</li>
-                        <li class="list-group-item">Dapibus ac facilisis in</li>
-                        <li class="list-group-item">Morbi leo risus</li>
-                        <li class="list-group-item">Porta ac consectetur ac</li>
-                        <li class="list-group-item">Vestibulum at eros</li>
-                        <li class="list-group-item">Cras justo odio</li>
-                        <li class="list-group-item">Dapibus ac facilisis in</li>
-                        <li class="list-group-item">Morbi leo risus</li>
-                        <li class="list-group-item">Porta ac consectetur ac</li>
-                        <li class="list-group-item">Vestibulum at eros</li>
-                        <li class="list-group-item">Cras justo odio</li>
-                        <li class="list-group-item">Dapibus ac facilisis in</li>
-                        <li class="list-group-item">Morbi leo risus</li>
-                        <li class="list-group-item">Porta ac consectetur ac</li>
-                        <li class="list-group-item">Vestibulum at eros</li>
+                        <% @data.each do |email, value| %>
+                            <li class="list-group-item">
+                                 Name: <%=value["name"] %>
+                                 A: <%=value["additions"] %>
+                                 D: <%=value["deletions"] %>
+                                 M: <%=value["modified"] %>
+
+                            </li>
+                        <%end%>
+
+
+
                     </ul>
 
 
