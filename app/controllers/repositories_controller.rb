@@ -79,7 +79,7 @@ class RepositoriesController < ApplicationController
           @data_in_series.push([value["name"],value["additions"] + value["modified"]])
 
       end
-      
+
 
       @chart2 = LazyHighCharts::HighChart.new('pie') do |c|
          c.chart(
@@ -178,6 +178,16 @@ end
 
     def set_initial_variables
       github = Octokit::Client.new access_token: current_user.oauth_token
+
+      orgs = github.organization_memberships
+      orgs.each do (o)
+          name_org = o.organization_url
+          name_org = name_org[29 .. name_org.length - 1]
+          repos_org = github.organization_repositories name_org
+      end
+
+
+
       repos = Repository.all.to_a
       github.repos.each do |item|
         if !Repository.where(github_id: item.id).any?
