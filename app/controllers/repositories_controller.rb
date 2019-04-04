@@ -16,6 +16,7 @@ class RepositoriesController < ApplicationController
      @id = @repository.id
      repop = github.repo @repository.full_name
      total = 0
+     @data_in_series = []
      if repop
          @name_repo = repop.full_name
          commits = github.commits @name_repo
@@ -38,6 +39,10 @@ class RepositoriesController < ApplicationController
             end
 
         end
+
+        @data.each do |key,value|
+            @data_in_series.push([value["name"],value["additions"].to_i + value["modified"].to_i])
+        end
         # @name_repo = repop.full_name
     else
         @name_repo = "POOOOP"
@@ -45,43 +50,10 @@ class RepositoriesController < ApplicationController
      @username = current_user.username
 
 
-      @chart = LazyHighCharts::HighChart.new('pie') do |f|
-          f.chart({:defaultSeriesType=>"pie" ,
-               :margin=> [50, 200, 60, 170]},
-
-            )
-
-          f.series(
-              :type=> 'pie',
-              :name=> 'percentage contribution',
-              :data=> [
-                 ['Sam',   45.0],
-                 ['Pedro',       15.0],
-                 ['Juan',   30.0],
-                 ['Thomas',    5.0],
-                 ['Jeff',   5.0]
-                 ])
-          f.legend(:layout=> 'vertical',:style=> {:left=> 'auto', :bottom=> 'auto',:right=> '50px',:top=> '100px'})
-          f.plot_options(:pie=>{
-            :allowPointSelect=>true,
-            :cursor=>"pointer" ,
-            :dataLabels=>{
-              :enabled=>true,
-              :color=>"black",
-              :style=>{
-                :font=>"13px Trebuchet MS, Verdana, sans-serif"
-              }
-            }
-          })
-      end
-      @data_in_series = []
-      @data.each do |key,value|
-          @data_in_series.push([value["name"],value["additions"] + value["modified"]])
-
-      end
 
 
-      @chart2 = LazyHighCharts::HighChart.new('pie') do |c|
+
+      @chart = LazyHighCharts::HighChart.new('pie') do |c|
          c.chart(
             plotBackgroundColor: nil,
             plotBorderWidth: nil,
@@ -181,20 +153,21 @@ end
       local_repos = Repository.all.to_a
       current_username = github.user.login
       repos_ids_stored = Repository.all.pluck(:github_id).to_set
-      local_repos = []  
+      local_repos = []
       repos_ids_stored = Set.new()
       orgs = github.organizations
       @amount_orgs = orgs.size
       @userID = current_username
       @orgs_with_repos = {}
 
+      @orgs_with_repos["local"] = [];
       #Organize stored repos in organizations
       local_repos.each do |repo|
           @orgs_with_repos["local"].push(repo)
+          repos_ids_stored.add(repo.id)
       end
 
       #List repositories i have contribute
-      @orgs_with_repos["local"] = [];
       github.repositories(current_username).each do |repo_item|
           if !repos_ids_stored.include? repo_item.id
             repo = Repository.new

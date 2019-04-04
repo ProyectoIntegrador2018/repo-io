@@ -51,12 +51,12 @@
                         <ul>
                             <% org_repos.each do |repository| %>
 
-                                <%= form_for @repo do |f| %>
+
                                     <li class="container-fluid list-group-item">
                                         <div class="row">
                                             <% if Repository.where(github_id: repository.github_id).any? %>
                                                 <div class="col-4">
-                                                  <strong><a href="<%= Repository.where(github_id: repository.github_id).pluck(:id)[0]%>"><%=repository.name%></a></strong>
+                                                  <strong><a href="/repositories/<%= Repository.where(github_id: repository.github_id).pluck(:id)[0]%>"><%=repository.name%></a></strong>
                                                 </div>
                                                 <div class="col-4">
                                                     <em><%= repository.url %></em>
@@ -73,6 +73,7 @@
                                                     <em><%= repository.url %></em>
                                                 </div>
                                                 <div class="col-4">
+                                                    <%= form_for @repo do |f| %>
                                                     <%= f.hidden_field :github_id, value: repository.github_id %>
                                                     <%= f.hidden_field :name, value: repository.name %>
                                                     <%= f.hidden_field :url, value: repository.url %>
@@ -82,6 +83,8 @@
                                                     <%= f.hidden_field :collaborator, value: repository.collaborator %>
                                                     <%= button_tag 'Add', class: 'button is-success float-right' %>
                                                 </div>
+
+
                                             <% end %>
                                         </div>
                                     </li>
