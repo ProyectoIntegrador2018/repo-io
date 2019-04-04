@@ -10,11 +10,12 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require rails-ujs
+// require rails-ujs
 //= require activestorage
 //= require turbolinks
 //= require sessions_new.js
 //= require jquery
+//= require jquery_ujs
 //= require bootstrap
 
 //= require highcharts/highcharts
@@ -22,5 +23,3 @@
 //= require highcharts/modules/no-data-to-display
 
 //= require_tree .
-
-

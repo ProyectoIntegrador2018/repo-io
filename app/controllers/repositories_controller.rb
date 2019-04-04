@@ -178,32 +178,71 @@ end
 
     def set_initial_variables
       github = Octokit::Client.new access_token: current_user.oauth_token
+      local_repos = Repository.all.to_a
+      current_username = github.user.login
+      repos_ids_stored = Repository.all.pluck(:github_id).to_set
+      local_repos = []  
+      repos_ids_stored = Set.new()
+      orgs = github.organizations
+      @amount_orgs = orgs.size
+      @userID = current_username
+      @orgs_with_repos = {}
 
-      orgs = github.organization_memberships
-      orgs.each do (o)
-          name_org = o.organization_url
-          name_org = name_org[29 .. name_org.length - 1]
-          repos_org = github.organization_repositories name_org
+      #Organize stored repos in organizations
+      local_repos.each do |repo|
+          @orgs_with_repos["local"].push(repo)
+      end
+
+      #List repositories i have contribute
+      @orgs_with_repos["local"] = [];
+      github.repositories(current_username).each do |repo_item|
+          if !repos_ids_stored.include? repo_item.id
+            repo = Repository.new
+            repo.github_id = repo_item.id
+            repo.url = repo_item.html_url
+            repo.name = repo_item.name
+            repo.full_name = repo_item.full_name
+            repo.description = repo_item.description
+            repo.size = repo_item.size
+            repo.collaborator = repo_item.collaborators_url
+
+            local_repos.push(repo)
+            repos_ids_stored.add(repo_item.id)
+
+            @orgs_with_repos["local"].push(repo)
+          end
+      end
+
+      #List repositories of organizations I belong
+      orgs.each do |o|
+         name_org = o.login
+
+         repos_org = github.organization_repositories name_org
+         @orgs_with_repos[name_org] =[]
+         repos_org.each do |repo_item|
+             if !repos_ids_stored.include? repo_item.id
+               repo = Repository.new
+               repo.github_id = repo_item.id
+               repo.url = repo_item.html_url
+               repo.name = repo_item.name
+               repo.full_name = repo_item.full_name
+               repo.description = repo_item.description
+               repo.size = repo_item.size
+               repo.collaborator = repo_item.collaborators_url
+
+               local_repos.push(repo)
+               repos_ids_stored.add(repo_item.id)
+
+               @orgs_with_repos[name_org].push(repo)
+             end
+         end
+
       end
 
 
 
-      repos = Repository.all.to_a
-      github.repos.each do |item|
-        if !Repository.where(github_id: item.id).any?
-          repo = Repository.new
-          repo.github_id = item.id
-          repo.url = item.html_url
-          repo.name = item.name
-          repo.full_name = item.full_name
-          repo.description = item.description
-          repo.size = item.size
-          repo.collaborator = item.collaborator
-          repos.push(repo)
-        end
-      end
 
-      @repositories = repos
+      @repositories = local_repos
       @repo = Repository.new
       # @site = github.oauth.login
     end

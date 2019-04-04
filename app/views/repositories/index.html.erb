@@ -30,60 +30,73 @@
                     Organizations
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#">Org 1</a>
-                    <a class="dropdown-item" href="#">Org 2</a>
-                    <a class="dropdown-item" href="#">Org 3</a>
+                    <% @orgs_with_repos.each do |org_name, org_repos| %>
+                        <span id="<%=org_name%>_selector"class="dropdown-item" href=""><%=org_name%></span>
+                    <% end %>
                 </div>
             </div>
         </div>
+
         <h5><%= @site %></h5>
+        <% @orgs_with_repos.each do|org_name, org_repos|%>
 
-        <div class="col-12 py-5 px-5">
-            <div class="list-group">
-                <% @repositories.each do |repository| %>
+                <div id="<%=org_name%>_header" class="col-12 px-5 ">
+                    <div class="container-fluid">
+                        <h1><%=org_name%></h1>
+                    </div>
 
-                    <%= form_for @repo do |f| %>
-                        <li class="container-fluid list-group-item">
-                            <div class="row">
-                                <% if Repository.where(github_id: repository.github_id).any? %>
-                                    <div class="col-4">
-                                      <strong><%= link_to repository.name, repository %></strong>
-                                    </div>
-                                    <div class="col-4">
-                                        <em><%= repository.url %></em>
-                                    </div>
-                                    <div class="col-4 ">
-                                        <%= link_to 'Delete', repository, class:"float-right", method: :delete, data: { confirm: 'Are you sure?' } %>
-                                    </div>
-                                <% else %>
+                </div>
+                <div id=<%=org_name%> class="col-12 py-5 px-5 list_repos">
+                    <div class="list-group">
+                        <ul>
+                            <% org_repos.each do |repository| %>
 
-                                    <div class="col-4">
-                                        <p><%=repository.name%></p>
-                                    </div>
-                                    <div class="col-4">
-                                        <em><%= repository.url %></em>
-                                    </div>
-                                    <div class="col-4">
-                                        <%= f.hidden_field :github_id, value: repository.github_id %>
-                                        <%= f.hidden_field :name, value: repository.name %>
-                                        <%= f.hidden_field :url, value: repository.url %>
-                                        <%= f.hidden_field :full_name, value: repository.full_name %>
-                                        <%= f.hidden_field :description, value: repository.description %>
-                                        <%= f.hidden_field :size, value: repository.size %>
-                                        <%= f.hidden_field :collaborator, value: repository.collaborator %>
-                                        <%= button_tag 'Add', class: 'button is-success float-right' %>
-                                    </div>
+                                <%= form_for @repo do |f| %>
+                                    <li class="container-fluid list-group-item">
+                                        <div class="row">
+                                            <% if Repository.where(github_id: repository.github_id).any? %>
+                                                <div class="col-4">
+                                                  <strong><%= link_to repository.name, repository %></strong>
+                                                </div>
+                                                <div class="col-4">
+                                                    <em><%= repository.url %></em>
+                                                </div>
+                                                <div class="col-4 ">
+                                                    <%= link_to 'Delete', repository, class:"float-right", method: :delete, data: { confirm: 'Are you sure?' } %>
+                                                </div>
+                                            <% else %>
+
+                                                <div class="col-4">
+                                                    <p><%=repository.name%></p>
+                                                </div>
+                                                <div class="col-4">
+                                                    <em><%= repository.url %></em>
+                                                </div>
+                                                <div class="col-4">
+                                                    <%= f.hidden_field :github_id, value: repository.github_id %>
+                                                    <%= f.hidden_field :name, value: repository.name %>
+                                                    <%= f.hidden_field :url, value: repository.url %>
+                                                    <%= f.hidden_field :full_name, value: repository.full_name %>
+                                                    <%= f.hidden_field :description, value: repository.description %>
+                                                    <%= f.hidden_field :size, value: repository.size %>
+                                                    <%= f.hidden_field :collaborator, value: repository.collaborator %>
+                                                    <%= button_tag 'Add', class: 'button is-success float-right' %>
+                                                </div>
+                                            <% end %>
+                                        </div>
+                                    </li>
                                 <% end %>
-                            </div>
-                        </li>
-                    <% end %>
-                <% end %>
-            </ul>
 
-            <h5><%= @site %></h5>
+                            <% end %>
 
-        </div>
+                        </ul>
+                        <h5><%= @site %></h5>
+                    </div>
+                </div>
+
+        <% end %>
     </div>
+
 </div>
 
 
@@ -92,3 +105,40 @@
 <% if false %>
 <%= link_to 'New Repository', new_repository_path %>
 <% end %>
+
+<script>
+
+    $(document).ready(function() {
+        $('.dropdown-item').each(function(){
+            $(this).css({'cursor': 'pointer'});
+        });
+
+
+        $('.list_repos').each(function(index, elem){
+            let header_id = "#" + $(this).attr("id") + "_header";
+            if(index === 0){
+                $(header_id).show();
+                $(this).show();
+            }else{
+                $(this).hide();
+                $(header_id).hide();
+            }
+        });
+
+        $('.dropdown-item').click(function(){
+            var org_selector_id = $(this).attr("id");
+            var org_id = org_selector_id.substring(0, org_selector_id.length - 9);
+            $('.list_repos').each(function(index, value){
+                let header_id = "#" + $(this).attr("id") + "_header";
+                if($(this).attr('id') == org_id){
+                    $(header_id).show();
+                    $(this).show();
+                }else{
+                    $(header_id).hide();
+                    $(this).hide();
+                }
+            });
+        });
+    });
+
+</script>
