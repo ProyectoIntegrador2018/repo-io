@@ -56,7 +56,7 @@
                                         <div class="row">
                                             <% if Repository.where(github_id: repository.github_id).any? %>
                                                 <div class="col-4">
-                                                  <strong><%= link_to repository.name, repository %></strong>
+                                                  <strong><a href="<%= Repository.where(github_id: repository.github_id).pluck(:id)[0]%>"><%=repository.name%></a></strong>
                                                 </div>
                                                 <div class="col-4">
                                                     <em><%= repository.url %></em>
