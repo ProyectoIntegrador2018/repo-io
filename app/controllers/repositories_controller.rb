@@ -45,7 +45,7 @@ class RepositoriesController < ApplicationController
         end
         # @name_repo = repop.full_name
     else
-        @name_repo = "POOOOP"
+        @name_repo = "nil"
     end
      @username = current_user.username
 
