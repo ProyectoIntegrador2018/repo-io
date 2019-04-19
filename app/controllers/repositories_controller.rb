@@ -188,6 +188,14 @@ end
           #Get organization stored from databae to store the repositories that belong to it
           org_checking = Organization.find_by(github_id: org_t.id)
 
+          #Make the user logged in relation that belongs to that organization
+          if !org_checking.users.exists?(id: current_user.id)
+            Organization.transaction do
+             org_checking.users << current_user
+             org_checking.save!
+            end
+          end
+
           #Get repositories for that organization
           repos_org = github.organization_repositories name_org
 
@@ -198,7 +206,7 @@ end
 
                   #Get info of repo and save it in the corresponding org
                   Repository.transaction do
-                      =begin
+=begin
                       #Get the author's username of the corresponding repository
                       author_username = repo_t.owner.login
                       author_temp_id = nil
@@ -226,7 +234,7 @@ end
                           author_temp_id = Author.find_by(:username => author_username).id
 
                       end
-                      =end
+=end
 
                       #Create new repository for the organization being checked and use authors reference
                       org_checking.repositories.create(
