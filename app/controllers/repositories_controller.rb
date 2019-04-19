@@ -100,17 +100,20 @@ end
   # POST /repositories
   # POST /repositories.json
   def create
-    @repository = Repository.new(repository_params)
+    #@repository = Repository.new(repository_params)
+    @rep = repository_params
 
-    respond_to do |format|
-      if @repository.save
-        format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
-        format.json { render :show, status: :created, location: @repository }
-      else
-        format.html { render :new }
-        format.json { render json: @repository.errors, status: :unprocessable_entity }
-      end
-    end
+    Rails.logger.debug("My object: #{@rep.inspect}")
+
+    #respond_to do |format|
+     # if @repository.save
+    #    format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
+    #    format.json { render :show, status: :created, location: @repository }
+     # else
+    #    format.html { render :new }
+    #    format.json { render json: @repository.errors, status: :unprocessable_entity }
+     # end
+    #end
   end
 
   # PATCH/PUT /repositories/1
@@ -155,7 +158,101 @@ end
       repos_ids_stored = Repository.all.pluck(:github_id).to_set
       local_repos = []
       repos_ids_stored = Set.new()
-      orgs = github.organizations
+      orgs = github.organizations #Get all organizations of the user
+
+      #store organizations for the user logged
+      orgs.each do |org_t|
+          name_org = org_t.login
+          #Check if its already in the database
+          #If it exists should we edited? (modify code to allow this)
+          if !Organization.exists?(:github_id => org_t.id)
+
+              org_detail = github.org name_org
+
+              Organization.transaction do
+                  temp_org = Organization.new
+                  temp_org.github_id = org_detail.id
+                  temp_org.url = org_detail.url
+                  temp_org.name = org_detail.login
+                  temp_org.company = org_detail.company
+                  temp_org.public_repos = org_detail.public_repos.to_i
+                  temp_org.private_repos = org_detail.total_private_repos.to_i
+                  temp_org.total_repos = org_detail.public_repos.to_i + org_detail.total_private_repos.to_i
+                  temp_org.collaborators = org_detail.collaborators.to_i
+                  temp_org.save!
+              end
+
+          end
+          #For that organization store repositories minor details without commits
+
+          #Get organization stored from databae to store the repositories that belong to it
+          org_checking = Organization.find_by(github_id: org_t.id)
+
+          #Get repositories for that organization
+          repos_org = github.organization_repositories name_org
+
+          #Loop through repositories and stored the ones that hvent been saved
+          repos_org.each do |repo_t|
+              #Is the repo already stored?
+              if !Repository.exists?(:github_id => repo_t.id)
+
+                  #Get info of repo and save it in the corresponding org
+                  Repository.transaction do
+                      =begin
+                      #Get the author's username of the corresponding repository
+                      author_username = repo_t.owner.login
+                      author_temp_id = nil
+
+                      #Check if that author already exists in DB
+                      if !Author.exists?(:username => author_username)
+                          #Get authors name from github
+                          author_name = (github.user author_username).name
+
+                          #Use authors name and username to create a new user and reference it on the repository
+                            Author.transaction do
+                                author_temp = Author.new
+                                author_temp.name = author_name
+                                author_temp.username = author_username
+
+                                #Save it in the DB
+                                author_temp.save!
+
+                                #Get id of the stored author
+                                author_temp_id = author_temp.id
+
+                            end
+                      else
+                          #Get author id
+                          author_temp_id = Author.find_by(:username => author_username).id
+
+                      end
+                      =end
+
+                      #Create new repository for the organization being checked and use authors reference
+                      org_checking.repositories.create(
+                          #author_id: author_temp_id, #using authors reference here
+                          github_id: repo_t.id,
+                          url: repo_t.url,
+                          name: repo_t.name,
+                          full_name: repo_t.full_name,
+                          description: repo_t.description,
+                          size: repo_t.size,
+                          collaborator: false #SIGO SIN ENTENDER CUAL ES EL PROPOSITO DE ESTO... (ATTE. EDGAR)
+                      )
+                  end #end for transaction
+
+              end #end for if
+
+          end #end for repos loop
+
+
+
+
+
+      end #end for orgs loop
+
+
+
       @amount_orgs = orgs.size
       @userID = current_username
       @orgs_with_repos = {}
