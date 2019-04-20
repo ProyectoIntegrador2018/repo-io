@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_18_005641) do
+ActiveRecord::Schema.define(version: 2019_04_20_073929) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,14 +23,14 @@ ActiveRecord::Schema.define(version: 2019_04_18_005641) do
   end
 
   create_table "commits", force: :cascade do |t|
-    t.string "title"
-    t.string "description"
+    t.string "message"
+    t.string "author_username"
     t.integer "additions"
     t.integer "deletions"
-    t.integer "changed_files"
-    t.bigint "repository_id"
+    t.integer "files_changed"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "repository_id"
     t.index ["repository_id"], name: "index_commits_on_repository_id"
   end
 
@@ -45,6 +45,8 @@ ActiveRecord::Schema.define(version: 2019_04_18_005641) do
     t.integer "collaborators"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_organizations_on_user_id"
   end
 
   create_table "organizations_users", id: false, force: :cascade do |t|
@@ -66,8 +68,17 @@ ActiveRecord::Schema.define(version: 2019_04_18_005641) do
     t.bigint "organization_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["author_id"], name: "index_repositories_on_author_id"
+    t.bigint "organization_id"
     t.index ["organization_id"], name: "index_repositories_on_organization_id"
+  end
+
+  create_table "repository_authors", force: :cascade do |t|
+    t.bigint "repository_id"
+    t.bigint "author_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_repository_authors_on_author_id"
+    t.index ["repository_id"], name: "index_repository_authors_on_repository_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -81,4 +92,9 @@ ActiveRecord::Schema.define(version: 2019_04_18_005641) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "commits", "repositories"
+  add_foreign_key "organizations", "users"
+  add_foreign_key "repositories", "organizations"
+  add_foreign_key "repository_authors", "authors"
+  add_foreign_key "repository_authors", "repositories"
 end

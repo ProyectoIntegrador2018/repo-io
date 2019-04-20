@@ -5,93 +5,84 @@ class RepositoriesController < ApplicationController
   # GET /repositories
   # GET /repositories.json
   def index
-     @username = current_user.username
+    @username = current_user.username
     set_initial_variables
   end
 
   # GET /repositories/1
   # GET /repositories/1.json
   def show
-     github = Octokit::Client.new access_token: current_user.oauth_token
-     @id = @repository.id
-     repop = github.repo @repository.full_name
-     total = 0
-     @data_in_series = []
-     if repop
-         @name_repo = repop.full_name
-         commits = github.commits @name_repo
-         @data=Hash.new
+    @authors = @repository.authors
+    @username = current_user.username
+    @chart = LazyHighCharts::HighChart.new('pie') do |f|
+      f.chart({:defaultSeriesType=>"pie" ,
+               :margin=> [50, 200, 60, 170]},
 
-         commits.each do |c|
-             cTemp = github.commit @name_repo, c.sha
-             if @data.has_key? cTemp.commit.author.email
-                 @data[cTemp.commit.author.email]["name"] =cTemp.commit.author.name.to_s
-                @data[cTemp.commit.author.email]["additions"] = @data[cTemp.commit.author.email]["additions"].to_i +  cTemp.stats.additions.to_i
-                @data[cTemp.commit.author.email]["deletions"] = @data[cTemp.commit.author.email]["deletions"].to_i + cTemp.stats.deletions.to_i
-                @data[cTemp.commit.author.email]["modified"] = @data[cTemp.commit.author.email]["modified"].to_i + cTemp.stats.modifiedw.to_i
-             else
-                 @data[cTemp.commit.author.email] = {
-                     name: cTemp.commit.author.name.to_s,
-                     additions: cTemp.stats.additions.to_i,
-                     deletions: cTemp.stats.deletions.to_i,
-                     modified: cTemp.stats.modified.to_i
-                }
-            end
+              )
 
-        end
-
-        @data.each do |key,value|
-            @data_in_series.push([value["name"],value["additions"].to_i + value["modified"].to_i])
-        end
-        # @name_repo = repop.full_name
-    else
-        @name_repo = "nil"
+      f.series(
+          :type=> 'pie',
+          :name=> 'percentage contribution',
+          :data=> [
+              ['Sam',   45.0],
+              ['Pedro',       15.0],
+              ['Juan',   30.0],
+              ['Thomas',    5.0],
+              ['Jeff',   5.0]
+          ])
+      f.legend(:layout=> 'vertical',:style=> {:left=> 'auto', :bottom=> 'auto',:right=> '50px',:top=> '100px'})
+      f.plot_options(:pie=>{
+          :allowPointSelect=>true,
+          :cursor=>"pointer" ,
+          :dataLabels=>{
+              :enabled=>true,
+              :color=>"black",
+              :style=>{
+                  :font=>"13px Trebuchet MS, Verdana, sans-serif"
+              }
+          }
+      })
     end
-     @username = current_user.username
-
-
-
-
-
-      @chart = LazyHighCharts::HighChart.new('pie') do |c|
-         c.chart(
-            plotBackgroundColor: nil,
-            plotBorderWidth: nil,
-            plotShadow: false,
-            type: 'pie'
-        )
-        c.title(
-            text: 'Contributions to repo'
-        )
-        c.tooltip(
-            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-        )
-        #c.options[:chart][:height] = 800
-        #c.options[:chart][:width] = 800
-        c.plotOptions(
-            pie: {
-                allowPointSelect: true,
-                cursor: 'pointer',
-                dataLabels: {
-                    enabled: true,
-                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                    style: {
-                        color: 'black'
-                    }
-                }
-            }
-        )
-        c.series(
-            :type=> 'pie',
-            :name=> 'percentage contribution',
-            :data=> @data_in_series
-        )
+    @data_in_series = []
+    @authors.each do |author|
+      @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).sum(&:additions) + @repository.commits.where(author_username: author.username).sum(&:files_changed) ])
     end
-end
 
-
-
-
+    @chart2 = LazyHighCharts::HighChart.new('pie') do |c|
+      c.chart(
+          plotBackgroundColor: nil,
+          plotBorderWidth: nil,
+          plotShadow: false,
+          type: 'pie'
+      )
+      c.title(
+          text: 'Contributions to repo'
+      )
+      c.tooltip(
+          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+      )
+      #c.options[:chart][:height] = 800
+      #c.options[:chart][:width] = 800
+      c.plotOptions(
+          pie: {
+              allowPointSelect: true,
+              cursor: 'pointer',
+              dataLabels: {
+                  enabled: true,
+                  format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                  style: {
+                      color: 'black'
+                  }
+              }
+          }
+      )
+      c.series(
+          :type=> 'pie',
+          :name=> 'percentage contribution',
+          :data=> @data_in_series
+      )
+    end
+  end
 
   # GET /repositories/1/edit
   def edit
@@ -100,8 +91,40 @@ end
   # POST /repositories
   # POST /repositories.json
   def create
-    #@repository = Repository.new(repository_params)
-    @rep = repository_params
+    github = Octokit::Client.new access_token: current_user.oauth_token
+    @repository = Repository.new(repository_params)
+    repop = github.repo @repository.full_name
+    if repop
+      @name_repo = repop.full_name
+      commits = github.commits @name_repo
+      commits.each do |c|
+        cTemp = github.commit @name_repo, c.sha
+        commit = Commit.new
+        #if Author not exists in that repository
+        if !Author.where(username: cTemp.commit.author.email.to_s).any?
+          author = Author.new
+          author.username = cTemp.commit.author.email.to_s
+          author.name = cTemp.commit.author.name.to_s
+          author.repositories << @repository
+          author.save
+        else
+          author = Author.where(username: cTemp.commit.author.email.to_s).first
+          if !author.repositories.where(id: @repository.id).any?
+            author.repositories << @repository
+          end
+          author.save
+        end
+        commit.message = cTemp.commit.message.to_s
+        commit.additions = cTemp.stats.additions.to_i
+        commit.deletions = cTemp.stats.deletions.to_i
+        commit.files_changed = cTemp.files.count.to_i
+        commit.author_username = Author.where(username: cTemp.commit.author.email.to_s).first.username
+        commit.repository = @repository
+        commit.save
+      end
+    else
+      @name_repo = "nil"
+    end
 
     Rails.logger.debug("My object: #{@rep.inspect}")
 
@@ -135,233 +158,41 @@ end
   def destroy
     @repository.destroy
     respond_to do |format|
-      format.html { redirect_to repositories_url, notice: 'Repository was successfully destroyed.' }
+      format.html { redirect_to repositories_path, notice: 'Repository was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_repository
-      @repository = Repository.find(params[:id])
+  # Use callbacks to share common setup or constraints between actions.
+  def set_repository
+    @repository = Repository.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def repository_params
+    params.require(:repository).permit(:github_id, :url, :name, :full_name, :description, :size, :collaborator)
+  end
+
+  def set_initial_variables
+    github = Octokit::Client.new access_token: current_user.oauth_token
+    repos = Repository.all.to_a
+    github.repos.each do |item|
+      if !Repository.where(github_id: item.id).any?
+        repo = Repository.new
+        repo.github_id = item.id
+        repo.url = item.html_url
+        repo.name = item.name
+        repo.full_name = item.full_name
+        repo.description = item.description
+        repo.size = item.size
+        repo.collaborator = item.collaborator
+        repos.push(repo)
+      end
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def repository_params
-      params.require(:repository).permit(:github_id, :url, :name, :full_name, :description, :size, :collaborator)
-    end
-
-    def set_initial_variables
-      github = Octokit::Client.new access_token: current_user.oauth_token
-      local_repos = Repository.all.to_a
-      current_username = github.user.login
-      repos_ids_stored = Repository.all.pluck(:github_id).to_set
-      local_repos = []
-      repos_ids_stored = Set.new()
-      orgs = github.organizations #Get all organizations of the user
-
-#-------------------------------------------------------------------------------
-#Store organizations and its repositories for the user logged
-
-      orgs.each do |org_t|
-          name_org = org_t.login
-          #Check if its already in the database
-          #If it exists should we edited? (modify code to allow this)
-          if !Organization.exists?(:github_id => org_t.id)
-
-              org_detail = github.org name_org
-
-              Organization.transaction do
-                  temp_org = Organization.new
-                  temp_org.github_id = org_detail.id
-                  temp_org.url = org_detail.url
-                  temp_org.name = org_detail.login
-                  temp_org.company = org_detail.company
-                  temp_org.public_repos = org_detail.public_repos.to_i
-                  temp_org.private_repos = org_detail.total_private_repos.to_i
-                  temp_org.total_repos = org_detail.public_repos.to_i + org_detail.total_private_repos.to_i
-                  temp_org.collaborators = org_detail.collaborators.to_i
-                  temp_org.save!
-              end
-
-          end
-          #For that organization store repositories minor details without commits
-
-          #Get organization stored from databae to store the repositories that belong to it
-          org_checking = Organization.find_by(github_id: org_t.id)
-
-          #Make the user logged in relation that belongs to that organization
-          if !org_checking.users.exists?(id: current_user.id)
-            Organization.transaction do
-             org_checking.users << current_user
-             org_checking.save!
-            end
-          end
-
-          #Get repositories for that organization
-          repos_org = github.organization_repositories name_org
-
-          #Loop through repositories and stored the ones that hvent been saved
-          repos_org.each do |repo_t|
-              #Is the repo already stored?
-              if !Repository.exists?(:github_id => repo_t.id)
-
-                  #Get info of repo and save it in the corresponding org
-                  Repository.transaction do
-
-                      #Get the author's username of the corresponding repository
-                      author_username = repo_t.owner.login
-                      author_temp_id = nil
-
-                      #Check if owner is a user
-                      if repo_t.owner.type === "User"
-                          #Check if that author already exists in DB
-                          if !Author.exists?(:username => author_username)
-                              #Get authors name from github
-                              author_name = (github.user author_username).name
-
-                              #Use authors name and username to create a new user and reference it on the repository
-                                Author.transaction do
-                                    author_temp = Author.new
-                                    author_temp.name = author_name
-                                    author_temp.username = author_username
-
-                                    #Save it in the DB
-                                    author_temp.save!
-
-                                    #Get id of the stored author
-                                    author_temp_id = author_temp.id
-
-                                end
-                          else
-                              #Get author id
-                              author_temp_id = Author.find_by(:username => author_username).id
-
-                          end
-                      end
-
-
-
-                      #Create new repository for the organization being checked and use authors reference
-                      org_checking.repositories.create(
-                          author_id: author_temp_id, #using authors reference here
-                          github_id: repo_t.id,
-                          url: repo_t.url,
-                          name: repo_t.name,
-                          full_name: repo_t.full_name,
-                          description: repo_t.description,
-                          size: repo_t.size,
-                          collaborator: false #SIGO SIN ENTENDER CUAL ES EL PROPOSITO DE ESTO... (ATTE. EDGAR)
-                      )
-                  end #end for transaction
-              end #end for if
-          end #end for repos loop
-      end #end for orgs loop
-
-#-------------------------------------------------------------------------------
-#Store repositories that user participates but does not belong to an organization and add them to his organization
-
-
-      #Get repositories not belonging to orgs of the user logged in
-      current_user_repos = github.repositories
-
-      current_user_repos.each do |repo_t|
-          #Add them an author corresponding to the one the owner belongs to
-
-           repo_author_id = nil
-          #Check if owner of repo is a user and not an organization
-          if repo_t.owner.type === "User"
-              if !Author.exists?(username: repo_t.owner.login)
-                  Author.transaction do
-                      author_temp = Author.new
-                      author_temp.username = repo_t.owner.login
-                      author_temp.name = (github.user  repo_t.owner.login).name #Get name of user and store it
-                      author_temp.save!
-                  end
-              end
-              repo_author_id = (Author.find_by(username: repo_t.owner.login)).id
-
-
-          end
-          #Create and save repository with the corresponding author
-          if !Repository.exists?(github_id: repo_t.id)
-              Repository.transaction do
-                  Repository.create(
-                      author_id: repo_author_id,
-                      github_id: repo_t.id,
-                      url: repo_t.url,
-                      name: repo_t.name,
-                      full_name: repo_t.full_name,
-                      description: repo_t.description,
-                      size: repo_t.size,
-                      collaborator: false
-                  )
-              end
-          end
-      end #end of foreach of current_user_repos
-#-------------------------------------------------------------------------------
-
-      @amount_orgs = orgs.size
-      @userID = current_username
-      @orgs_with_repos = {}
-
-      @orgs_with_repos["local"] = [];
-      #Organize stored repos in organizations
-      local_repos.each do |repo|
-          @orgs_with_repos["local"].push(repo)
-          repos_ids_stored.add(repo.id)
-      end
-
-      #List repositories i have contribute
-      github.repositories(current_username).each do |repo_item|
-          if !repos_ids_stored.include? repo_item.id
-            repo = Repository.new
-            repo.github_id = repo_item.id
-            repo.url = repo_item.html_url
-            repo.name = repo_item.name
-            repo.full_name = repo_item.full_name
-            repo.description = repo_item.description
-            repo.size = repo_item.size
-            repo.collaborator = repo_item.collaborators_url
-
-            local_repos.push(repo)
-            repos_ids_stored.add(repo_item.id)
-
-            @orgs_with_repos["local"].push(repo)
-          end
-      end
-
-      #List repositories of organizations I belong
-      orgs.each do |o|
-         name_org = o.login
-
-         repos_org = github.organization_repositories name_org
-         @orgs_with_repos[name_org] =[]
-         repos_org.each do |repo_item|
-             if !repos_ids_stored.include? repo_item.id
-               repo = Repository.new
-               repo.github_id = repo_item.id
-               repo.url = repo_item.html_url
-               repo.name = repo_item.name
-               repo.full_name = repo_item.full_name
-               repo.description = repo_item.description
-               repo.size = repo_item.size
-               repo.collaborator = repo_item.collaborators_url
-
-               local_repos.push(repo)
-               repos_ids_stored.add(repo_item.id)
-
-               @orgs_with_repos[name_org].push(repo)
-             end
-         end
-
-      end
-
-
-
-
-      @repositories = local_repos
-      @repo = Repository.new
-      # @site = github.oauth.login
-    end
+    @repositories = repos
+    @repo = Repository.new
+    # @site = github.oauth.login
+  end
 end

@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :organizations
+
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_initialize.tap do |user|
       user.email = auth.info.email

@@ -19,13 +19,12 @@
                     <div class="card-title text-center "> Colaboradores</div>
 
                     <ul class="list-group" data-spy="scroll" style="overflow: scroll; max-height: 300px;">
-                        <% @data.each do |email, value| %>
+                        <% @authors.each do |author| %>
                             <li class="list-group-item">
-                                 Name: <%=value["name"] %>
-                                 A: <%=value["additions"] %>
-                                 D: <%=value["deletions"] %>
-                                 M: <%=value["modified"] %>
-
+                                 Name: <%= author.name %>
+                                 A: <%= @repository.commits.where(author_username: author.username).sum(&:additions) %>
+                                 D: <%= @repository.commits.where(author_username: author.username).sum(&:deletions) %>
+                                 M: <%= @repository.commits.where(author_username: author.username).sum(&:files_changed) %>
                             </li>
                         <%end%>
 

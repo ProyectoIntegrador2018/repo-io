@@ -1,5 +1,5 @@
 class Repository < ApplicationRecord
-    belongs_to :organization
-    belongs_to :author
-    has_many :commits
+  has_many :commits, dependent: :destroy
+  has_many :repository_authors, dependent: :destroy
+  has_many :authors, through: :repository_authors, dependent: :destroy
 end
