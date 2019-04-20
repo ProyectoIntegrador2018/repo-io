@@ -8,7 +8,8 @@ class CreateRepositories < ActiveRecord::Migration[5.2]
       t.string :description
       t.integer :size
       t.boolean :collaborator
-
+      t.references :author
+      t.references :organization
       t.timestamps
     end
   end

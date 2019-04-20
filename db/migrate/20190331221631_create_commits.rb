@@ -6,7 +6,7 @@ class CreateCommits < ActiveRecord::Migration[5.2]
       t.integer :additions
       t.integer :deletions
       t.integer :changed_files
-
+      t.references :repository
       t.timestamps
     end
   end
