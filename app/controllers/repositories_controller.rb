@@ -126,15 +126,17 @@ class RepositoriesController < ApplicationController
       @name_repo = "nil"
     end
 
-    respond_to do |format|
-      if @repository.save
-        format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
-        format.json { render :show, status: :created, location: @repository }
-      else
-        format.html { render :new }
-        format.json { render json: @repository.errors, status: :unprocessable_entity }
-      end
-    end
+    Rails.logger.debug("My object: #{@rep.inspect}")
+
+    #respond_to do |format|
+     # if @repository.save
+    #    format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
+    #    format.json { render :show, status: :created, location: @repository }
+     # else
+    #    format.html { render :new }
+    #    format.json { render json: @repository.errors, status: :unprocessable_entity }
+     # end
+    #end
   end
 
   # PATCH/PUT /repositories/1

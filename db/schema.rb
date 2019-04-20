@@ -49,6 +49,13 @@ ActiveRecord::Schema.define(version: 2019_04_20_073929) do
     t.index ["user_id"], name: "index_organizations_on_user_id"
   end
 
+  create_table "organizations_users", id: false, force: :cascade do |t|
+    t.integer "organization_id"
+    t.integer "user_id"
+    t.index ["organization_id"], name: "index_organizations_users_on_organization_id"
+    t.index ["user_id"], name: "index_organizations_users_on_user_id"
+  end
+
   create_table "repositories", force: :cascade do |t|
     t.string "github_id"
     t.string "url"
@@ -57,6 +64,8 @@ ActiveRecord::Schema.define(version: 2019_04_20_073929) do
     t.string "description"
     t.integer "size"
     t.boolean "collaborator"
+    t.bigint "author_id"
+    t.bigint "organization_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "organization_id"
