@@ -160,7 +160,9 @@ end
       repos_ids_stored = Set.new()
       orgs = github.organizations #Get all organizations of the user
 
-      #store organizations for the user logged
+#-------------------------------------------------------------------------------
+#Store organizations and its repositories for the user logged
+
       orgs.each do |org_t|
           name_org = org_t.login
           #Check if its already in the database
@@ -206,39 +208,43 @@ end
 
                   #Get info of repo and save it in the corresponding org
                   Repository.transaction do
-=begin
+
                       #Get the author's username of the corresponding repository
                       author_username = repo_t.owner.login
                       author_temp_id = nil
 
-                      #Check if that author already exists in DB
-                      if !Author.exists?(:username => author_username)
-                          #Get authors name from github
-                          author_name = (github.user author_username).name
+                      #Check if owner is a user
+                      if repo_t.owner.type === "User"
+                          #Check if that author already exists in DB
+                          if !Author.exists?(:username => author_username)
+                              #Get authors name from github
+                              author_name = (github.user author_username).name
 
-                          #Use authors name and username to create a new user and reference it on the repository
-                            Author.transaction do
-                                author_temp = Author.new
-                                author_temp.name = author_name
-                                author_temp.username = author_username
+                              #Use authors name and username to create a new user and reference it on the repository
+                                Author.transaction do
+                                    author_temp = Author.new
+                                    author_temp.name = author_name
+                                    author_temp.username = author_username
 
-                                #Save it in the DB
-                                author_temp.save!
+                                    #Save it in the DB
+                                    author_temp.save!
 
-                                #Get id of the stored author
-                                author_temp_id = author_temp.id
+                                    #Get id of the stored author
+                                    author_temp_id = author_temp.id
 
-                            end
-                      else
-                          #Get author id
-                          author_temp_id = Author.find_by(:username => author_username).id
+                                end
+                          else
+                              #Get author id
+                              author_temp_id = Author.find_by(:username => author_username).id
 
+                          end
                       end
-=end
+
+
 
                       #Create new repository for the organization being checked and use authors reference
                       org_checking.repositories.create(
-                          #author_id: author_temp_id, #using authors reference here
+                          author_id: author_temp_id, #using authors reference here
                           github_id: repo_t.id,
                           url: repo_t.url,
                           name: repo_t.name,
@@ -248,18 +254,52 @@ end
                           collaborator: false #SIGO SIN ENTENDER CUAL ES EL PROPOSITO DE ESTO... (ATTE. EDGAR)
                       )
                   end #end for transaction
-
               end #end for if
-
           end #end for repos loop
-
-
-
-
-
       end #end for orgs loop
 
+#-------------------------------------------------------------------------------
+#Store repositories that user participates but does not belong to an organization and add them to his organization
 
+
+      #Get repositories not belonging to orgs of the user logged in
+      current_user_repos = github.repositories
+
+      current_user_repos.each do |repo_t|
+          #Add them an author corresponding to the one the owner belongs to
+
+           repo_author_id = nil
+          #Check if owner of repo is a user and not an organization
+          if repo_t.owner.type === "User"
+              if !Author.exists?(username: repo_t.owner.login)
+                  Author.transaction do
+                      author_temp = Author.new
+                      author_temp.username = repo_t.owner.login
+                      author_temp.name = (github.user  repo_t.owner.login).name #Get name of user and store it
+                      author_temp.save!
+                  end
+              end
+              repo_author_id = (Author.find_by(username: repo_t.owner.login)).id
+
+
+          end
+          #Create and save repository with the corresponding author
+          if !Repository.exists?(github_id: repo_t.id)
+              Repository.transaction do
+                  Repository.create(
+                      author_id: repo_author_id,
+                      github_id: repo_t.id,
+                      url: repo_t.url,
+                      name: repo_t.name,
+                      full_name: repo_t.full_name,
+                      description: repo_t.description,
+                      size: repo_t.size,
+                      collaborator: false
+                  )
+              end
+          end
+      end #end of foreach of current_user_repos
+#-------------------------------------------------------------------------------
 
       @amount_orgs = orgs.size
       @userID = current_username
