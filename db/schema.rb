@@ -64,8 +64,6 @@ ActiveRecord::Schema.define(version: 2019_04_20_073929) do
     t.string "description"
     t.integer "size"
     t.boolean "collaborator"
-    t.bigint "author_id"
-    t.bigint "organization_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "organization_id"

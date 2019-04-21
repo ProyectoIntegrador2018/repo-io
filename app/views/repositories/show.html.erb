@@ -1,13 +1,9 @@
-
 <div class="container-fluid">
-
     <div class="row">
         <div class="col-sm-12 py-5 px-5 ">
             <h1 class="text-center "><%= @repository.name %></h1>
             <p class="text-center"><%= @repository.description %></p>
         </div>
-
-
     </div>
     <div class="row">
         <div class="col-sm-4">
@@ -27,17 +23,9 @@
                                  M: <%= @repository.commits.where(author_username: author.username).sum(&:files_changed) %>
                             </li>
                         <%end%>
-
-
-
                     </ul>
-
-
                 </div>
             </div>
         </div>
-
     </div>
-
-
 </div>

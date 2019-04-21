@@ -126,17 +126,15 @@ class RepositoriesController < ApplicationController
       @name_repo = "nil"
     end
 
-    Rails.logger.debug("My object: #{@rep.inspect}")
-
-    #respond_to do |format|
-     # if @repository.save
-    #    format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
-    #    format.json { render :show, status: :created, location: @repository }
-     # else
-    #    format.html { render :new }
-    #    format.json { render json: @repository.errors, status: :unprocessable_entity }
-     # end
-    #end
+    respond_to do |format|
+     if @repository.save
+       format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
+       format.json { render :show, status: :created, location: @repository }
+     else
+       format.html { render :new }
+       format.json { render json: @repository.errors, status: :unprocessable_entity }
+     end
+    end
   end
 
   # PATCH/PUT /repositories/1
@@ -176,6 +174,9 @@ class RepositoriesController < ApplicationController
 
   def set_initial_variables
     github = Octokit::Client.new access_token: current_user.oauth_token
+    @orgs = github.orgs
+    rep = @orgs.first
+    reps = github.org_repos(rep.login)
     repos = Repository.all.to_a
     github.repos.each do |item|
       if !Repository.where(github_id: item.id).any?
@@ -193,6 +194,5 @@ class RepositoriesController < ApplicationController
 
     @repositories = repos
     @repo = Repository.new
-    # @site = github.oauth.login
   end
 end

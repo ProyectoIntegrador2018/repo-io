@@ -1,5 +1,3 @@
-
-
 <div class="container ">
     <% if false %>
         <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -30,26 +28,24 @@
                     Organizations
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <% @orgs_with_repos.each do |org_name, org_repos| %>
-                        <span id="<%=org_name%>_selector"class="dropdown-item" href=""><%=org_name%></span>
+                    <% @orgs.each do |org| %>
+                        <span id="<%=org.login%>_selector"class="dropdown-item" href=""><%=org.login%></span>
                     <% end %>
                 </div>
             </div>
         </div>
 
-        <h5><%= @site %></h5>
-        <% @orgs_with_repos.each do|org_name, org_repos|%>
-
-                <div id="<%=org_name%>_header" class="col-12 px-5 ">
+<!--        <h5><%#= @site %></h5>-->
+        <%# @repositories.each do|org_name, org_repos|%>
+<!--                <div id="<%#=org_name%>_header" class="col-12 px-5 ">-->
                     <div class="container-fluid">
-                        <h1><%=org_name%></h1>
+<!--                        <h1><%#=org_name%></h1>-->
                     </div>
-
-                </div>
-                <div id=<%=org_name%> class="col-12 py-5 px-5 list_repos">
+<!--                </div>-->
+<!--                <div id=<%#=org_name%> class="col-12 py-5 px-5 list_repos">-->
                     <div class="list-group">
                         <ul>
-                            <% org_repos.each do |repository| %>
+                            <% @repositories.each do |repository| %>
 
 
                                     <li class="container-fluid list-group-item">
@@ -90,10 +86,10 @@
                                     </li>
                                 <% end %>
 
-                            <% end %>
+                            <%# end %>
 
                         </ul>
-                        <h5><%= @site %></h5>
+<!--                        <h5><%#= @site %></h5>-->
                     </div>
                 </div>
 
@@ -109,39 +105,39 @@
 <%= link_to 'New Repository', new_repository_path %>
 <% end %>
 
-<script>
+<!--<script>-->
 
-    $(document).ready(function() {
-        $('.dropdown-item').each(function(){
-            $(this).css({'cursor': 'pointer'});
-        });
+<!--    $(document).ready(function() {-->
+<!--        $('.dropdown-item').each(function(){-->
+<!--            $(this).css({'cursor': 'pointer'});-->
+<!--        });-->
 
 
-        $('.list_repos').each(function(index, elem){
-            let header_id = "#" + $(this).attr("id") + "_header";
-            if(index === 0){
-                $(header_id).show();
-                $(this).show();
-            }else{
-                $(this).hide();
-                $(header_id).hide();
-            }
-        });
+<!--        $('.list_repos').each(function(index, elem){-->
+<!--            let header_id = "#" + $(this).attr("id") + "_header";-->
+<!--            if(index === 0){-->
+<!--                $(header_id).show();-->
+<!--                $(this).show();-->
+<!--            }else{-->
+<!--                $(this).hide();-->
+<!--                $(header_id).hide();-->
+<!--            }-->
+<!--        });-->
 
-        $('.dropdown-item').click(function(){
-            var org_selector_id = $(this).attr("id");
-            var org_id = org_selector_id.substring(0, org_selector_id.length - 9);
-            $('.list_repos').each(function(index, value){
-                let header_id = "#" + $(this).attr("id") + "_header";
-                if($(this).attr('id') == org_id){
-                    $(header_id).show();
-                    $(this).show();
-                }else{
-                    $(header_id).hide();
-                    $(this).hide();
-                }
-            });
-        });
-    });
+<!--        $('.dropdown-item').click(function(){-->
+<!--            var org_selector_id = $(this).attr("id");-->
+<!--            var org_id = org_selector_id.substring(0, org_selector_id.length - 9);-->
+<!--            $('.list_repos').each(function(index, value){-->
+<!--                let header_id = "#" + $(this).attr("id") + "_header";-->
+<!--                if($(this).attr('id') == org_id){-->
+<!--                    $(header_id).show();-->
+<!--                    $(this).show();-->
+<!--                }else{-->
+<!--                    $(header_id).hide();-->
+<!--                    $(this).hide();-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+<!--    });-->
 
-</script>
+<!--</script>-->
