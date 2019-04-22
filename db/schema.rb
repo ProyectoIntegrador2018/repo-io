@@ -45,8 +45,6 @@ ActiveRecord::Schema.define(version: 2019_04_20_073929) do
     t.integer "collaborators"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id"
-    t.index ["user_id"], name: "index_organizations_on_user_id"
   end
 
   create_table "repositories", force: :cascade do |t|
@@ -84,7 +82,6 @@ ActiveRecord::Schema.define(version: 2019_04_20_073929) do
   end
 
   add_foreign_key "commits", "repositories"
-  add_foreign_key "organizations", "users"
   add_foreign_key "repositories", "organizations"
   add_foreign_key "repository_authors", "authors"
   add_foreign_key "repository_authors", "repositories"
