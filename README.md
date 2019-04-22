@@ -1,6 +1,6 @@
 # Repo I/O
 <img src="https://i.imgur.com/MrwhQ2D.png" width="100" height="100" />
- 
+
 Web platform to review and display of elegant form the member contributions in a repo.
 
 ## Table of contents
@@ -27,7 +27,7 @@ Web platform to review and display of elegant form the member contributions in a
 
 ### Environment URLS
 
-* **Production** - [Site](http://repository-io.herokuapp.com) 
+* **Production** - [Site](http://repository-io.herokuapp.com)
 * **Development** - [localhost:3000](localhost:3000)
 
 ### Equipos de desarrollo
@@ -48,7 +48,7 @@ You should ask for access to this tools if you don't have it already:
 * [Github repo](https://github.com/OscarMichelH/repo-io)
 * [Backlog](#) - Check Project inside this repository.
 * [Design](https://www.figma.com/file/GTQAIFCEgER9sN2ExVILzxMK/integrador?node-id=0%3A1) - Check screens on Figma
-* [Heroku](#) 
+* [Heroku](#)
 * [Documentation](https://drive.google.com/drive/folders/1K7-i7_sWDcglDcQIgT5MQqzg0uxiZcvg?usp=sharing)
 
 ## Development
@@ -92,7 +92,13 @@ $ rails db:drop
 $ rails db:create
 $ rails db:migrate
 $ rails db:seed
-```
+```  
+If you are using a Mac for development with stardard configuration, first run these commands:
+```  
+$ sudo mkdir /var/pgsql_socket/
+$ sudo ln -s /private/tmp/.s.PGSQL.5432 /var/pgsql_socket/
+```  
+Note: If it is your first time running Rails + PostgreSQL, first create the database with `rails db:create`  
 
 4. Start the application:
 
@@ -136,5 +142,5 @@ This will generate the file *config/application.yml*
 To run all tests, you can do:
 
 ```
-$ rspec 
+$ rspec
 ```
