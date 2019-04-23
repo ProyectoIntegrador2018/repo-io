@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_20_073929) do
+ActiveRecord::Schema.define(version: 2019_04_22_235816) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,15 @@ ActiveRecord::Schema.define(version: 2019_04_20_073929) do
     t.integer "collaborators"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "orgs_users", force: :cascade do |t|
+    t.bigint "organization_id"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_orgs_users_on_organization_id"
+    t.index ["user_id"], name: "index_orgs_users_on_user_id"
   end
 
   create_table "repositories", force: :cascade do |t|
@@ -82,6 +91,8 @@ ActiveRecord::Schema.define(version: 2019_04_20_073929) do
   end
 
   add_foreign_key "commits", "repositories"
+  add_foreign_key "orgs_users", "organizations"
+  add_foreign_key "orgs_users", "users"
   add_foreign_key "repositories", "organizations"
   add_foreign_key "repository_authors", "authors"
   add_foreign_key "repository_authors", "repositories"
