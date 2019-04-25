@@ -16,41 +16,12 @@ class RepositoriesController < ApplicationController
   def show
     @authors = @repository.authors
     @username = current_user.username
-    @chart = LazyHighCharts::HighChart.new('pie') do |f|
-      f.chart({:defaultSeriesType=>"pie" ,
-               :margin=> [50, 200, 60, 170]},
-
-              )
-
-      f.series(
-          :type=> 'pie',
-          :name=> 'percentage contribution',
-          :data=> [
-              ['Sam',   45.0],
-              ['Pedro',       15.0],
-              ['Juan',   30.0],
-              ['Thomas',    5.0],
-              ['Jeff',   5.0]
-          ])
-      f.legend(:layout=> 'vertical',:style=> {:left=> 'auto', :bottom=> 'auto',:right=> '50px',:top=> '100px'})
-      f.plot_options(:pie=>{
-          :allowPointSelect=>true,
-          :cursor=>"pointer" ,
-          :dataLabels=>{
-              :enabled=>true,
-              :color=>"black",
-              :style=>{
-                  :font=>"13px Trebuchet MS, Verdana, sans-serif"
-              }
-          }
-      })
-    end
     @data_in_series = []
     @authors.each do |author|
       @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).sum(&:additions) + @repository.commits.where(author_username: author.username).sum(&:files_changed) ])
     end
 
-    @chart2 = LazyHighCharts::HighChart.new('pie') do |c|
+    @chart = LazyHighCharts::HighChart.new('pie') do |c|
       c.chart(
           plotBackgroundColor: nil,
           plotBorderWidth: nil,
@@ -199,7 +170,7 @@ class RepositoriesController < ApplicationController
       #  format.html { render :edit }
       #  format.json { render json: @repository.errors, status: :unprocessable_entity }
       #end
-      
+
       github = Octokit::Client.new access_token: current_user.oauth_token
 
       #repo_aux = Repository.where(id: params["github_id"])
