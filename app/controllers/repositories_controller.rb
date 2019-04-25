@@ -222,7 +222,13 @@ class RepositoriesController < ApplicationController
   def set_initial_variables
     github = Octokit::Client.new access_token: current_user.oauth_token
     @orgs = current_user.organizations
-    repos = Repository.all.to_a
+    repos = []
+    @orgs.each do |org|
+      org.repositories.each do |repo|
+        repos << repo
+      end
+    end
+
     github.repos.each do |item|
       if !Repository.where(github_id: item.id).any?
         repo = Repository.new
