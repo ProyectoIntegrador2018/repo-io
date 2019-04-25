@@ -160,6 +160,7 @@ class RepositoriesController < ApplicationController
             end
             author.save
           end
+          commit.github_sha = c.sha
           commit.message = cTemp.commit.message.to_s
           commit.additions = cTemp.stats.additions.to_i
           commit.deletions = cTemp.stats.deletions.to_i
@@ -197,6 +198,8 @@ class RepositoriesController < ApplicationController
         format.html { render :edit }
         format.json { render json: @repository.errors, status: :unprocessable_entity }
       end
+      
+
     end
   end
 
