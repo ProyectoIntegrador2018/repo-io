@@ -9,7 +9,8 @@ Rails.application.routes.draw do
 
 
   #Organization ajax call
-  get '/orgs/:name_org' to: 'organizations#get_repos'
+  get '/orgs/:name_org', to: 'organizations#get_repos'
+  
   resources :organizations
   resources :repositories
 end
