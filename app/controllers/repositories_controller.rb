@@ -7,6 +7,8 @@ class RepositoriesController < ApplicationController
   def index
     @username = current_user.username
     set_initial_variables
+    # @repositories = Repository.with_organization(params[:org_id]) if params[:org_id].present?
+    # @repositories = Repository.with_organization(1).with_date(params[:from],params[:until]) if params[:from] && params[:until]
   end
 
   # GET /repositories/1
