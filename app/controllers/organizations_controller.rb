@@ -71,4 +71,41 @@ class OrganizationsController < ApplicationController
     def organization_params
       params.require(:organization).permit(:github_id, :url, :name, :company, :public_repos, :private_repos, :total_repos, :collaborators)
     end
+
+    #Respond to ajax for getting repositories of that org
+    def get_repos
+        org_repos_stored = Array.new
+        org_repos_not_stored = Array.new
+
+        github = Octokit::Client.new access_token: current_user.oauth_token
+        org_name = params.name_org
+
+        #Get repos from org
+        org_repos = github.organization_repositories org_name
+
+        #Separate local repos from repos still not stored
+        org_repos.each do |repo|
+            if !Repository.exists?(:github_id => repo.id)
+                #store all the info in an array
+                org_repos_stored << repo
+            else
+                org_repos_not_stored << repo
+            end
+        end
+
+        #Create object to respond with
+        repos_to_send = {
+            "org_repos_stored": org_repos_stored,
+            "org_repos_not_stored": org_repos_not_stored
+        }
+
+        #send respond
+        render json: {
+            "repos" : repos_to_send
+        }
+
+
+
+    end
+
 end
