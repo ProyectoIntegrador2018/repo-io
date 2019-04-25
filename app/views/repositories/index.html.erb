@@ -27,22 +27,17 @@
                 <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Organizations
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <% @orgs.each do |org| %>
-                        <span id="<%=org.login%>_selector"class="dropdown-item" href=""><%=org.login%></span>
-                    <% end %>
-                </div>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <% @orgs.each do |org| %>
+                 <span id="<%=org.name%>_selector" class="dropdown-item" href=""><%=org.name%></span>
+              <% end %>
+            </div>
             </div>
         </div>
 
-<!--        <h5><%#= @site %></h5>-->
-        <%# @repositories.each do|org_name, org_repos|%>
-<!--                <div id="<%#=org_name%>_header" class="col-12 px-5 ">-->
                     <div class="container-fluid">
-<!--                        <h1><%#=org_name%></h1>-->
                     </div>
-<!--                </div>-->
-<!--                <div id=<%#=org_name%> class="col-12 py-5 px-5 list_repos">-->
                     <div class="list-group">
                         <ul>
                             <% @repositories.each do |repository| %>
@@ -85,11 +80,7 @@
                                         </div>
                                     </li>
                                 <% end %>
-
-                            <%# end %>
-
                         </ul>
-<!--                        <h5><%#= @site %></h5>-->
                     </div>
                 </div>
 
