@@ -31,6 +31,7 @@
     <div class="row">
         <div class="col-sm-4">
             <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
+                <input type="hidden" id="repo_id" name="repo_id" value="<%= @repository.id%>"></input>
                 <button type="submit"> Actualizar Repo </button>
             <% end -%>
         </div>

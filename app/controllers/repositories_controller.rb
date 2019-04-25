@@ -88,6 +88,7 @@ class RepositoriesController < ApplicationController
 
   # GET /repositories/1/edit
   def edit
+
   end
 
   # POST /repositories
@@ -191,14 +192,60 @@ class RepositoriesController < ApplicationController
   # PATCH/PUT /repositories/1.json
   def update
     respond_to do |format|
-      if @repository.update(repository_params)
-        format.html { redirect_to @repository, notice: 'Repository was successfully updated.' }
-        format.json { render :show, status: :ok, location: @repository }
-      else
-        format.html { render :edit }
-        format.json { render json: @repository.errors, status: :unprocessable_entity }
-      end
+      #if @repository.update(repository_params)
+      #  format.html { redirect_to @repository, notice: 'Repository was successfully updated.' }
+      #  format.json { render :show, status: :ok, location: @repository }
+      #else
+      #  format.html { render :edit }
+      #  format.json { render json: @repository.errors, status: :unprocessable_entity }
+      #end
       
+      github = Octokit::Client.new access_token: current_user.oauth_token
+
+      #repo_aux = Repository.where(id: params["github_id"])
+      #abort (params["repo_id"].inspect)
+      repo_aux = Repository.find_by(id: params["repo_id"])
+      most_recent_commit = repo_aux.commits.order('created DESC').first
+
+      #get new commits
+      #new_commits = github.commits_since(repo_aux.github_id,most_recent_commit.created.to_s)
+      new_commits = github.commits_since(repo_aux.full_name,most_recent_commit.created.to_s)
+
+      #add new commits
+      new_commits.each do |commit|
+        if !Commit.where(github_sha: commit.sha).any?
+          commit_temp = Commit.new
+          cTemp = github.commit @name_repo, c.sha
+
+          #if Author not exists in that repository
+          if !Author.where(username: cTemp.commit.author.email.to_s).any?
+            author = Author.new
+            author.username = cTemp.commit.author.email.to_s
+            author.name = cTemp.commit.author.name.to_s
+            author.repositories << repo_aux
+            author.save
+          else
+            author = Author.where(username: cTemp.commit.author.email.to_s).first
+            if !author.repositories.where(id: repo_aux.id).any?
+              author.repositories << repo_aux
+            end
+            author.save
+          end
+          commit.github_sha = commit.sha
+          commit.message = cTemp.commit.message.to_s
+          commit.additions = cTemp.stats.additions.to_i
+          commit.deletions = cTemp.stats.deletions.to_i
+          commit.files_changed = cTemp.files.count.to_i
+          commit.created = cTemp.commit.author.date
+          commit.author_username = Author.where(username: cTemp.commit.author.email.to_s).first.username
+          commit.repository = repo_aux
+          commit.save!
+
+        end
+      end
+
+      format.html { redirect_to repo_aux, notice: 'Repository was successfully updated.' }
+      format.json { render :show, status: :updated, location: repo_aux }
 
     end
   end
