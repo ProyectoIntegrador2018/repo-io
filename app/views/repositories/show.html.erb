@@ -28,14 +28,14 @@
                     </ul>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-4">
-            <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
-                <input type="hidden" id="repo_id" name="repo_id" value="<%= @repository.id%>"></input>
-                <button type="submit"> Update Repo </button>
-            <% end -%>
+            <div class="row" style="padding: 1em 0px 0px 0px">
+                <div class="col-12" align="right">
+                    <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
+                        <input type="hidden" id="repo_id" name="repo_id" value="<%= @repository.id%>"></input>
+                        <button class="btn btn-info" type="submit"> Update Repo </button>
+                    <% end -%>
+                </div>
+            </div>
         </div>
     </div>
 </div>
