@@ -29,7 +29,7 @@ class RepositoriesController < ApplicationController
           type: 'pie'
       )
       c.title(
-          text: 'Contributions to repo'
+          text: '<strong>Contribution Percentage</strong>'
       )
       c.tooltip(
           pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
