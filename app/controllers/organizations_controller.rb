@@ -1,5 +1,5 @@
 class OrganizationsController < ApplicationController
-  before_action :set_organization, only: [:show, :edit, :update, :destroy]
+
 
   # GET /organizations
   # GET /organizations.json
@@ -60,6 +60,49 @@ class OrganizationsController < ApplicationController
       format.json { head :no_content }
     end
   end
+  #Respond to ajax for getting repositories of that org
+  def repos
+      org_repos_stored = Array.new
+      org_repos_not_stored = Array.new
+
+      github = Octokit::Client.new access_token: current_user.oauth_token
+      org_name = params["name_org"]
+
+      if(org_name ==  github.login)
+          org_repos = github.repositories  github.login
+      elsif ( Author.where(username: org_name).any?)
+          org_repos = github.repositories org_name
+      else
+          #Get repos from org
+         org_repos = github.organization_repositories org_name
+      end
+
+
+      #Separate local repos from repos still not stored
+      org_repos.each do |repo|
+          if !Repository.exists?(github_id: repo.id)
+
+
+              #store all the info in an array
+              org_repos_not_stored << repo
+          else
+              repo_t = Repository.find_by(github_id: repo.id)
+              org_repos_stored << repo_t
+          end
+      end
+
+      #Create object to respond with
+      @repos_to_send = {
+          "org_repos_stored": org_repos_stored,
+          "org_repos_not_stored": org_repos_not_stored
+      }
+
+
+      #Render partial and send it as a string
+      render json: { repos: render_to_string('repositories/_repo', layout: false, locals: {repos:@repos_to_send, org_repos_stored: org_repos_stored, org_repos_not_stored: org_repos_not_stored }) }
+
+
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -72,40 +115,6 @@ class OrganizationsController < ApplicationController
       params.require(:organization).permit(:github_id, :url, :name, :company, :public_repos, :private_repos, :total_repos, :collaborators)
     end
 
-    #Respond to ajax for getting repositories of that org
-    def get_repos
-        org_repos_stored = Array.new
-        org_repos_not_stored = Array.new
 
-        github = Octokit::Client.new access_token: current_user.oauth_token
-        org_name = params.name_org
-
-        #Get repos from org
-        org_repos = github.organization_repositories org_name
-
-        #Separate local repos from repos still not stored
-        org_repos.each do |repo|
-            if !Repository.exists?(:github_id => repo.id)
-                #store all the info in an array
-                org_repos_stored << repo
-            else
-                org_repos_not_stored << repo
-            end
-        end
-
-        #Create object to respond with
-        repos_to_send = {
-            "org_repos_stored": org_repos_stored,
-            "org_repos_not_stored": org_repos_not_stored
-        }
-
-        #send respond
-        render json: {
-            "repos" : repos_to_send
-        }
-
-
-
-    end
 
 end
