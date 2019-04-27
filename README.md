@@ -1,7 +1,7 @@
 # Repo I/O
 <img src="https://i.imgur.com/MrwhQ2D.png" width="100" height="100" />
 
-Web platform to review and display of elegant form the member contributions in a repo.
+Web platform used to review and display in an elegant form the contributions done to a Github repository.
 
 ## Table of contents
 
