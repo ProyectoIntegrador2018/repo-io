@@ -60,14 +60,86 @@ class OrganizationsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+
+
+
   #Respond to ajax for getting repositories of that org
   def repos
+      #Get Name of the organization
+      org_name = params["org_name"]
+      start_date = params["from"].to_date
+      end_date = params["until"].to_date
+
+      if !org_name.blank?
+          #Get repos from specific organization
+          repos_from_org = self.get_repos_from_orgs org_name
+
+          #Filter repos to send by specified date filter
+          repos_to_send = filter_org_repos_between repos_from_org, start_date, end_date
+
+
+          #Render partial and send it as a string
+          render json: { repos: render_to_string('repositories/_repo', layout: false, locals: {org_repos_stored: repos_to_send['repos_stored'], org_repos_not_stored: repos_to_send['repos_not_stored'] }) }
+      end
+
+  end
+
+
+#Filters the repositories in organizations that have been commited something between to dates (excluding those dates)
+  def filter_org_repos_between(repos, start_date, end_date)
+      #Filter local repos
+      repos_stored = Array.new
+      repos["repos_stored"].each do |repo|
+          if(repo.commits.where("commits.created > ? AND commits.created < ?",start_date, end_date).any?)
+              repos_stored << repo
+          end
+      end
+
+      #Filter not stored repos
+      repos_not_stored = Array.new
+      github = Octokit::Client.new access_token: current_user.oauth_token #connect to github with octokit
+
+      #filter repos that werent updated between that range
+      repos["repos_not_stored"].each do |repo|
+          if date_in_range start_date, end_date, repo.updated_at
+              repos_not_stored << repo
+          end
+      end
+
+      #Return repos
+      repos_to_return = Hash.new
+      repos_to_return["repos_stored"] = repos_stored
+      repos_to_return["repos_not_stored"] = repos_not_stored
+
+      return repos_to_return
+
+  end
+
+  def date_in_range(start_date, end_date, date_to_check)
+      bigger_than_start_date = true
+      bigger_than_end_date = true
+
+      if  !start_date.nil? && date_to_check <= start_date
+          bigger_than_start_date =  false;
+      end
+
+      if !end_date.nil? && date_to_check >= end_date
+          bigger_than_end_date = false
+      end
+
+      return bigger_than_start_date && bigger_than_end_date
+
+  end
+
+  #Get repos from specific organization
+  def get_repos_from_orgs(org_name)
       org_repos_stored = Array.new
       org_repos_not_stored = Array.new
       org_repos = Array.new
 
       github = Octokit::Client.new access_token: current_user.oauth_token
-      org_name = params["name_org"]
+
 
       if(org_name ==  github.login)
           #Get public and private repositories made by the user logged in
@@ -115,17 +187,13 @@ class OrganizationsController < ApplicationController
       end
 
       #Create object to respond with
-      @repos_to_send = {
-          "org_repos_stored": org_repos_stored,
-          "org_repos_not_stored": org_repos_not_stored
-      }
+      repos_to_send = Hash.new
+      repos_to_send["repos_stored"] = org_repos_stored
+      repos_to_send["repos_not_stored"] = org_repos_not_stored
 
-
-      #Render partial and send it as a string
-      render json: { repos: render_to_string('repositories/_repo', layout: false, locals: {repos:@repos_to_send, org_repos_stored: org_repos_stored, org_repos_not_stored: org_repos_not_stored }) }
-
-
+      return repos_to_send
   end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -137,6 +205,8 @@ class OrganizationsController < ApplicationController
     def organization_params
       params.require(:organization).permit(:github_id, :url, :name, :company, :public_repos, :private_repos, :total_repos, :collaborators)
     end
+
+
 
 
 

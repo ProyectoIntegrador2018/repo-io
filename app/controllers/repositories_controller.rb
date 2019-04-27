@@ -299,6 +299,12 @@ class RepositoriesController < ApplicationController
         @orgs = orgs_user
     end
 
+    #Get only the names of the orgs
+    @orgs_name = ["Choose oganization ..."]
+    @orgs.each do |org_t|
+        @orgs_name << org_t.name
+    end
+
     repos = []
     @orgs.each do |org|
       org.repositories.each do |repo|
