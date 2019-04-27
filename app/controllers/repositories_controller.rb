@@ -14,11 +14,24 @@ class RepositoriesController < ApplicationController
   # GET /repositories/1
   # GET /repositories/1.json
   def show
-    @authors = @repository.authors
-    @username = current_user.username
     @data_in_series = []
-    @authors.each do |author|
-      @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).sum(&:additions) + @repository.commits.where(author_username: author.username).sum(&:files_changed) ])
+    if params[:from_date].present? && params[:until_date].present?
+      @from_date = params[:from_date]
+      @until_date = params[:until_date]
+      commits = @repository.commits.with_date(@from_date, @until_date)
+      @authors = []
+      commits.each { |commit| @authors << @repository.authors.where(username: commit.author_username).first }
+      @authors = @authors.uniq
+      @authors.each do |author|
+        @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) + @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:files_changed) ])
+      end
+    else
+      @authors = @repository.authors
+      @username = current_user.username
+      @data_in_series = []
+      @authors.each do |author|
+        @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).sum(&:additions) + @repository.commits.where(author_username: author.username).sum(&:files_changed) ])
+      end
     end
 
     @chart = LazyHighCharts::HighChart.new('pie') do |c|

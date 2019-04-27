@@ -69,7 +69,7 @@ class OrganizationsController < ApplicationController
       org_name = params["name_org"]
 
       if(org_name ==  github.login)
-          org_repos = github.repositories  github.login
+          org_repos = github.repositories
       elsif ( Author.where(username: org_name).any?)
           org_repos = github.repositories org_name
       else

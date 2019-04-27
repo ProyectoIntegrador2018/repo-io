@@ -18,10 +18,18 @@
                         <% @authors.each do |author| %>
                             <li class="list-group-item">
                                  <div class="row">
-                                   <div class="col-4 offset-1"><strong>Name:</strong> <%= author.name %></div>
-                                   <div class="col-2"><strong>A:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:additions) %> </div>
-                                   <div class="col-2"><strong>D:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:deletions) %> </div>
-                                   <div class="col-2"><strong>M:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:files_changed) %> </div>
+                                   <div class="col-3 offset-1"><strong>Name:</strong> <%= author.name %></div>
+                                 <% if @from_date && @until_date %>
+                                     <div class="col-2"><strong>A:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) %> </div>
+                                     <div class="col-2"><strong>D:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:deletions) %> </div>
+                                     <div class="col-2"><strong>M:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:files_changed) %> </div>
+                                     <div class="col-2"><strong>C:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).count %> </div>
+                                 <% else %>
+                                     <div class="col-2"><strong>A:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:additions) %> </div>
+                                     <div class="col-2"><strong>D:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:deletions) %> </div>
+                                     <div class="col-2"><strong>M:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:files_changed) %> </div>
+                                     <div class="col-2"><strong>C:</strong> <%= @repository.commits.where(author_username: author.username).count %> </div>
+                                 <% end %>
                                  </div>
                             </li>
                         <%end%>
@@ -30,10 +38,15 @@
             </div>
             <div class="row" style="padding: 1em 0px 0px 0px">
                 <div class="col-12" align="right">
-                    <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
-                        <input type="hidden" id="repo_id" name="repo_id" value="<%= @repository.id%>"></input>
-                        <button class="btn btn-info" type="submit"> Update Repo </button>
-                    <% end -%>
+                <%= form_tag(repository_path, method: :get) do %>
+                  Desde: <%= date_field_tag :from_date %>
+                  Hasta: <%= date_field_tag :until_date %>
+                  <%= submit_tag 'Filtrar', class:'btn btn-info' %>
+                <% end %>
+                <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
+                  <input type="hidden" id="repo_id" name="repo_id" value="<%= @repository.id%>"></input>
+                  <button class="btn btn-info" type="submit"> Update Repo </button>
+                <% end -%>
                 </div>
             </div>
         </div>
