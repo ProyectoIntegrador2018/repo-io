@@ -64,17 +64,27 @@ class OrganizationsController < ApplicationController
   def repos
       org_repos_stored = Array.new
       org_repos_not_stored = Array.new
+      org_repos = Array.new
 
       github = Octokit::Client.new access_token: current_user.oauth_token
       org_name = params["name_org"]
 
       if(org_name ==  github.login)
-          org_repos = github.repositories  github.login
-      elsif ( Author.where(username: current_user.email).any?)
+          #Get public and private repositories made by the user logged in
 
+          user_repos = github.repositories #Get all repos user has collaborated in
+
+          #Stored repos that belongs only to the user
+          user_repos.each do |repo_temp|
+              if repo_temp.owner.login == github.login
+                  org_repos << repo_temp
+              end
+          end
+      elsif ( Author.where(username: current_user.email).any?)
+          #Get repos where the user logged has collaborated and belongs to the "organization" of another user
           repos_collab_user = Author.find_by(username:current_user.email).repositories.uniq
           repos_org_temp = Organization.find_by(name:org_name).repositories.uniq
-          org_repos = Array.new
+
           repos_collab_user.each do |repo_user|
 
               repos_org_temp.each do| repo_org|
