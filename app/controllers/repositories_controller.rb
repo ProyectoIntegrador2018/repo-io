@@ -111,8 +111,8 @@ class RepositoriesController < ApplicationController
       #if the repo comes from an org
       if remote_repo.organization
         #if the org exists on database
-        if Organization.where(github_id: remote_repo.organization.node_id).any?
-          @repository.organization = Organization.where(github_id: remote_repo.organization.node_id).first
+        if Organization.where(github_id: remote_repo.organization.id).any?
+          @repository.organization = Organization.where(github_id: remote_repo.organization.id).first
         else
           org = Organization.new
           remote_org = github.org remote_repo.organization.login
@@ -223,7 +223,36 @@ class RepositoriesController < ApplicationController
 
   def set_initial_variables
     github = Octokit::Client.new access_token: current_user.oauth_token
-    @orgs = current_user.organizations
+
+    #Get the author that belongs to the user if there is one
+    current_author = Author.find_by(username: current_user.username)
+
+    #Get the organizations that belongs to the repositories that belong to the author's user
+    @orgs = nil
+    if(current_author != nil)
+        @orgs = current_author.repositories.organizations.distinct
+
+    end
+
+    #Get the unique organizations that belongs to the author'repositories and to the user
+    orgs_user = current_user.organizations
+    if(@orgs != nil)
+        orgs_user.each do | org_t|
+            org_temp_to_add = org_t
+            @orgs.each do |org_t_2|
+                if(org_t.id == org_t_2.id)
+                    org_temp_to_add = nil
+                    break
+                end
+            end
+            if(org_temp_to_add != nil)
+                @orgs << org_temp_to_add
+            end
+        end
+    else
+        @orgs = orgs_user
+    end
+
     repos = []
     @orgs.each do |org|
       org.repositories.each do |repo|

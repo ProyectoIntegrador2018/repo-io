@@ -19,7 +19,7 @@
         <div class="col-12 col-sm-12 py-5 px-5 ">
             <h1 class="text-center">Repositories</h1>
         </div>
-    </div>1
+    </div>
     <div class="row bg-light">
       <%= form_for repositories_path, method: :get do |f| %>
         Desde:
@@ -39,61 +39,17 @@
 
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <% @orgs.each do |org| %>
-                 <span id="<%=org.name%>_selector" class="dropdown-item" href=""><%=org.name%></span>
+                <%=link_to org.name , "/orgs/" + org.name, class:"dropdown-item", id: org.name, remote:true %>
+
               <% end %>
             </div>
             </div>
         </div>
 
-                    <div class="container-fluid">
-                    </div>
-                    <div class="list-group">
-                        <ul>
-                            <% @repositories.each do |repository| %>
+        <div id="list_repos" class="col-12 py-5 px-5">
 
+        </div>
 
-                                    <li class="container-fluid list-group-item">
-                                        <div class="row">
-                                            <% if Repository.where(github_id: repository.github_id).any? %>
-                                                <div class="col-4">
-                                                  <strong><a href="/repositories/<%= Repository.where(github_id: repository.github_id).pluck(:id)[0]%>"><%=repository.name%></a></strong>
-                                                </div>
-                                                <div class="col-4">
-                                                    <em><%= repository.url %></em>
-                                                </div>
-                                                <div class="col-4 ">
-                                                    <%= link_to 'Delete', repository, class:"float-right", method: :delete, data: { confirm: 'Are you sure?' } %>
-                                                </div>
-                                            <% else %>
-
-                                                <div class="col-4">
-                                                    <p><%=repository.name%></p>
-                                                </div>
-                                                <div class="col-4">
-                                                    <em><%= repository.url %></em>
-                                                </div>
-                                                <div class="col-4">
-                                                    <%= form_for @repo do |f| %>
-                                                    <%= f.hidden_field :github_id, value: repository.github_id %>
-                                                    <%= f.hidden_field :name, value: repository.name %>
-                                                    <%= f.hidden_field :url, value: repository.url %>
-                                                    <%= f.hidden_field :full_name, value: repository.full_name %>
-                                                    <%= f.hidden_field :description, value: repository.description %>
-                                                    <%= f.hidden_field :size, value: repository.size %>
-                                                    <%= f.hidden_field :collaborator, value: repository.collaborator %>
-                                                    <%= button_tag 'Add', class: 'button is-success float-right' %>
-                                                </div>
-
-
-                                            <% end %>
-                                        </div>
-                                    </li>
-                                <% end %>
-                        </ul>
-                    </div>
-                </div>
-
-        <% end %>
     </div>
 
 </div>
@@ -105,39 +61,29 @@
 <%= link_to 'New Repository', new_repository_path %>
 <% end %>
 
-<!--<script>-->
-
-<!--    $(document).ready(function() {-->
-<!--        $('.dropdown-item').each(function(){-->
-<!--            $(this).css({'cursor': 'pointer'});-->
-<!--        });-->
+<script>
+    function show_repos(event, data){
+        //data.repos contains partial rendered into string
+        $("#list_repos").html(data.repos);
 
 
-<!--        $('.list_repos').each(function(index, elem){-->
-<!--            let header_id = "#" + $(this).attr("id") + "_header";-->
-<!--            if(index === 0){-->
-<!--                $(header_id).show();-->
-<!--                $(this).show();-->
-<!--            }else{-->
-<!--                $(this).hide();-->
-<!--                $(header_id).hide();-->
-<!--            }-->
-<!--        });-->
+    }
 
-<!--        $('.dropdown-item').click(function(){-->
-<!--            var org_selector_id = $(this).attr("id");-->
-<!--            var org_id = org_selector_id.substring(0, org_selector_id.length - 9);-->
-<!--            $('.list_repos').each(function(index, value){-->
-<!--                let header_id = "#" + $(this).attr("id") + "_header";-->
-<!--                if($(this).attr('id') == org_id){-->
-<!--                    $(header_id).show();-->
-<!--                    $(this).show();-->
-<!--                }else{-->
-<!--                    $(header_id).hide();-->
-<!--                    $(this).hide();-->
-<!--                }-->
-<!--            });-->
-<!--        });-->
-<!--    });-->
+    function display_error(event, data){
 
-<!--</script>-->
+        console.log(data);
+    }
+
+    $(document).ready(function() {
+        $('.dropdown-item').each(function(){
+            $(this).css({'cursor': 'pointer'});
+        });
+
+        $('.dropdown-item').on ('ajax:success', show_repos)
+        $('.dropdown-item').on ('ajax:error', display_error)
+
+
+    });
+
+
+</script>
