@@ -2,6 +2,7 @@ class SessionsController < ApplicationController
   def new
       if current_user
            store_orgs_needed()
+           
            redirect_to repositories_path
       end
 

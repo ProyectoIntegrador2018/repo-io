@@ -70,8 +70,21 @@ class OrganizationsController < ApplicationController
 
       if(org_name ==  github.login)
           org_repos = github.repositories  github.login
-      elsif ( Author.where(username: org_name).any?)
-          org_repos = github.repositories org_name
+      elsif ( Author.where(username: current_user.email).any?)
+
+          repos_collab_user = Author.find_by(username:current_user.email).repositories.uniq
+          repos_org_temp = Organization.find_by(name:org_name).repositories.uniq
+          org_repos = Array.new
+          repos_collab_user.each do |repo_user|
+
+              repos_org_temp.each do| repo_org|
+                  if repo_user.id == repo_org.id
+                      org_repos_stored << repo_user
+                      break
+                  end
+              end
+          end
+          #Esta info se saca de la base de datos
       else
           #Get repos from org
          org_repos = github.organization_repositories org_name

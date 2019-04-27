@@ -225,18 +225,30 @@ class RepositoriesController < ApplicationController
     github = Octokit::Client.new access_token: current_user.oauth_token
 
     #Get the author that belongs to the user if there is one
-    current_author = Author.find_by(username: current_user.username)
+    current_author = Author.find_by(username: current_user.email)
 
     #Get the organizations that belongs to the repositories that belong to the author's user
-    @orgs = nil
+    @orgs = Array.new
     if(current_author != nil)
-        @orgs = current_author.repositories.organizations.distinct
+
+
+        temp_repos = current_author.repositories
+        temp_repos.each do  |repos|
+            org_to_add = repos.organization
+            @orgs.each do |org_added|
+                if org_to_add.id == org_added.id
+                    org_to_add = nil
+                    break
+                end
+            end
+            @orgs << org_to_add
+        end
 
     end
 
     #Get the unique organizations that belongs to the author'repositories and to the user
     orgs_user = current_user.organizations
-    if(@orgs != nil)
+    if(@orgs.size > 0)
         orgs_user.each do | org_t|
             org_temp_to_add = org_t
             @orgs.each do |org_t_2|
