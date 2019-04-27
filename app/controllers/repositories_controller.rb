@@ -14,43 +14,27 @@ class RepositoriesController < ApplicationController
   # GET /repositories/1
   # GET /repositories/1.json
   def show
-    @authors = @repository.authors
-    @username = current_user.username
-    @chart = LazyHighCharts::HighChart.new('pie') do |f|
-      f.chart({:defaultSeriesType=>"pie" ,
-               :margin=> [50, 200, 60, 170]},
-
-              )
-
-      f.series(
-          :type=> 'pie',
-          :name=> 'percentage contribution',
-          :data=> [
-              ['Sam',   45.0],
-              ['Pedro',       15.0],
-              ['Juan',   30.0],
-              ['Thomas',    5.0],
-              ['Jeff',   5.0]
-          ])
-      f.legend(:layout=> 'vertical',:style=> {:left=> 'auto', :bottom=> 'auto',:right=> '50px',:top=> '100px'})
-      f.plot_options(:pie=>{
-          :allowPointSelect=>true,
-          :cursor=>"pointer" ,
-          :dataLabels=>{
-              :enabled=>true,
-              :color=>"black",
-              :style=>{
-                  :font=>"13px Trebuchet MS, Verdana, sans-serif"
-              }
-          }
-      })
-    end
     @data_in_series = []
-    @authors.each do |author|
-      @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).sum(&:additions) + @repository.commits.where(author_username: author.username).sum(&:files_changed) ])
+    if params[:from_date].present? && params[:until_date].present?
+      @from_date = params[:from_date]
+      @until_date = params[:until_date]
+      commits = @repository.commits.with_date(@from_date, @until_date)
+      @authors = []
+      commits.each { |commit| @authors << @repository.authors.where(username: commit.author_username).first }
+      @authors = @authors.uniq
+      @authors.each do |author|
+        @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) + @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:files_changed) ])
+      end
+    else
+      @authors = @repository.authors
+      @username = current_user.username
+      @data_in_series = []
+      @authors.each do |author|
+        @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).sum(&:additions) + @repository.commits.where(author_username: author.username).sum(&:files_changed) ])
+      end
     end
 
-    @chart2 = LazyHighCharts::HighChart.new('pie') do |c|
+    @chart = LazyHighCharts::HighChart.new('pie') do |c|
       c.chart(
           plotBackgroundColor: nil,
           plotBorderWidth: nil,
@@ -58,7 +42,7 @@ class RepositoriesController < ApplicationController
           type: 'pie'
       )
       c.title(
-          text: 'Contributions to repo'
+          text: '<strong>Contribution Percentage</strong>'
       )
       c.tooltip(
           pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -88,6 +72,7 @@ class RepositoriesController < ApplicationController
 
   # GET /repositories/1/edit
   def edit
+
   end
 
   # POST /repositories
@@ -160,6 +145,7 @@ class RepositoriesController < ApplicationController
             end
             author.save
           end
+          commit.github_sha = c.sha
           commit.message = cTemp.commit.message.to_s
           commit.additions = cTemp.stats.additions.to_i
           commit.deletions = cTemp.stats.deletions.to_i
@@ -190,13 +176,61 @@ class RepositoriesController < ApplicationController
   # PATCH/PUT /repositories/1.json
   def update
     respond_to do |format|
-      if @repository.update(repository_params)
-        format.html { redirect_to @repository, notice: 'Repository was successfully updated.' }
-        format.json { render :show, status: :ok, location: @repository }
-      else
-        format.html { render :edit }
-        format.json { render json: @repository.errors, status: :unprocessable_entity }
+      #if @repository.update(repository_params)
+      #  format.html { redirect_to @repository, notice: 'Repository was successfully updated.' }
+      #  format.json { render :show, status: :ok, location: @repository }
+      #else
+      #  format.html { render :edit }
+      #  format.json { render json: @repository.errors, status: :unprocessable_entity }
+      #end
+
+      github = Octokit::Client.new access_token: current_user.oauth_token
+
+      #repo_aux = Repository.where(id: params["github_id"])
+      #abort (params["repo_id"].inspect)
+      repo_aux = Repository.find_by(id: params["repo_id"])
+      most_recent_commit = repo_aux.commits.order('created DESC').first
+
+      #get new commits
+      #new_commits = github.commits_since(repo_aux.github_id,most_recent_commit.created.to_s)
+      new_commits = github.commits_since(repo_aux.full_name,most_recent_commit.created.to_s)
+
+      #add new commits
+      new_commits.each do |commit|
+        if !Commit.where(github_sha: commit.sha).any?
+          commit_temp = Commit.new
+          cTemp = github.commit @repository.full_name, commit.sha
+
+          #if Author not exists in that repository
+          if !Author.where(username: cTemp.commit.author.email.to_s).any?
+            author = Author.new
+            author.username = cTemp.commit.author.email.to_s
+            author.name = cTemp.commit.author.name.to_s
+            author.repositories << repo_aux
+            author.save
+          else
+            author = Author.where(username: cTemp.commit.author.email.to_s).first
+            if !author.repositories.where(id: repo_aux.id).any?
+              author.repositories << repo_aux
+            end
+            author.save
+          end
+          commit_temp.github_sha = commit.sha
+          commit_temp.message = cTemp.commit.message.to_s
+          commit_temp.additions = cTemp.stats.additions.to_i
+          commit_temp.deletions = cTemp.stats.deletions.to_i
+          commit_temp.files_changed = cTemp.files.count.to_i
+          commit_temp.created = cTemp.commit.author.date
+          commit_temp.author_username = Author.where(username: cTemp.commit.author.email.to_s).first.username
+          commit_temp.repository = repo_aux
+          commit_temp.save
+
+        end
       end
+
+      format.html { redirect_to repo_aux, notice: 'Repository was successfully updated.' }
+      format.json { render :show, status: :updated, location: repo_aux }
+
     end
   end
 
