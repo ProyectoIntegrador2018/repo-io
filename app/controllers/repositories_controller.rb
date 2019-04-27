@@ -186,7 +186,7 @@ class RepositoriesController < ApplicationController
       new_commits.each do |commit|
         if !Commit.where(github_sha: commit.sha).any?
           commit_temp = Commit.new
-          cTemp = github.commit @name_repo, c.sha
+          cTemp = github.commit @repository.full_name, commit.sha
 
           #if Author not exists in that repository
           if !Author.where(username: cTemp.commit.author.email.to_s).any?
@@ -202,15 +202,15 @@ class RepositoriesController < ApplicationController
             end
             author.save
           end
-          commit.github_sha = commit.sha
-          commit.message = cTemp.commit.message.to_s
-          commit.additions = cTemp.stats.additions.to_i
-          commit.deletions = cTemp.stats.deletions.to_i
-          commit.files_changed = cTemp.files.count.to_i
-          commit.created = cTemp.commit.author.date
-          commit.author_username = Author.where(username: cTemp.commit.author.email.to_s).first.username
-          commit.repository = repo_aux
-          commit.save!
+          commit_temp.github_sha = commit.sha
+          commit_temp.message = cTemp.commit.message.to_s
+          commit_temp.additions = cTemp.stats.additions.to_i
+          commit_temp.deletions = cTemp.stats.deletions.to_i
+          commit_temp.files_changed = cTemp.files.count.to_i
+          commit_temp.created = cTemp.commit.author.date
+          commit_temp.author_username = Author.where(username: cTemp.commit.author.email.to_s).first.username
+          commit_temp.repository = repo_aux
+          commit_temp.save
 
         end
       end
