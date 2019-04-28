@@ -13,8 +13,8 @@
                 <div class="col-3">
                     <select class="form-control" autofocus name="org_name" id="org_name">
                         <option selected value="">Choose organization...</option>
-                        <% @orgs.each do |org|%>
-                            <option value="<%=org.name%>"><%=org.name%></option>
+                        <% @orgs_name.each do |org|%>
+                            <option value="<%=org%>"><%=org%></option>
                         <% end %>
                     </select>
                 </div>
@@ -40,7 +40,7 @@
 
                 </div>
                 <div class="col-1">
-                     <input id="find_button" type="submit" name="commit" class="btn btn-primary" value="Find" data-disabled-with="Find">
+                     <input id="find_button" type="submit" class="btn btn-primary" value="Find" data-disabled-with="Find">
                 </div>
             </div>
 

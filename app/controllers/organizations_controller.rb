@@ -67,13 +67,25 @@ class OrganizationsController < ApplicationController
   #Respond to ajax for getting repositories of that org
   def repos
       #Get Name of the organization
-      org_name = params["org_name"]
-      start_date = params["from"].to_date
-      end_date = params["until"].to_date
+      org_name = ""
+      start_date = nil
+      end_date = nil
 
-      if !org_name.blank?
+      if !params["from"].nil?
+          start_date = params["from"].to_date
+      end
+
+      if !params["until"].nil?
+          end_date = params["until"].to_date
+      end
+
+      if !params["org_name"].blank?
+          org_name = params["org_name"]
           #Get repos from specific organization
           repos_from_org = self.get_repos_from_orgs org_name
+
+          pp "WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+          pp repos_from_org["repos_stored"]
 
           #Filter repos to send by specified date filter
           repos_to_send = filter_org_repos_between repos_from_org, start_date, end_date
@@ -88,13 +100,31 @@ class OrganizationsController < ApplicationController
 
 #Filters the repositories in organizations that have been commited something between to dates (excluding those dates)
   def filter_org_repos_between(repos, start_date, end_date)
-      #Filter local repos
-      repos_stored = Array.new
-      repos["repos_stored"].each do |repo|
-          if(repo.commits.where("commits.created > ? AND commits.created < ?",start_date, end_date).any?)
-              repos_stored << repo
-          end
-      end
+          #Filter local repos
+          repos_stored = Array.new
+          repos_after_start_date = Array.new
+          if (!start_date.nil? && !end_date.nil?)
+             repos["repos_stored"].each do |repo|
+                if repo.commits.where("commits.created > ? && commits.created < ?", start_date, end_date).any?
+                    repos_stored.push repo
+                end
+             end
+         elsif !start_date.nil? && end_date.nil?
+             repos["repos_stored"].each do |repo|
+                if repo.commits.where("commits.created > ?", start_date).any?
+                    repos_stored.push repo
+                end
+             end
+         elsif start_date.nil? && !end_date.nil?
+             repos["repos_stored"].each do |repo|
+                if repo.commits.where("commits.created < ?", end_date).any?
+                    repos_stored.push repo
+                end
+            end
+        else
+            repos_stored = repos["repos_stored"]
+        end
+
 
       #Filter not stored repos
       repos_not_stored = Array.new
@@ -103,7 +133,7 @@ class OrganizationsController < ApplicationController
       #filter repos that werent updated between that range
       repos["repos_not_stored"].each do |repo|
           if date_in_range start_date, end_date, repo.updated_at
-              repos_not_stored << repo
+              repos_not_stored.push repo
           end
       end
 
@@ -141,7 +171,7 @@ class OrganizationsController < ApplicationController
       github = Octokit::Client.new access_token: current_user.oauth_token
 
 
-      if(org_name ==  github.login)
+      if(org_name == github.login)
           #Get public and private repositories made by the user logged in
 
           user_repos = github.repositories #Get all repos user has collaborated in
@@ -152,7 +182,7 @@ class OrganizationsController < ApplicationController
                   org_repos << repo_temp
               end
           end
-      elsif ( Author.where(username: current_user.email).any?)
+      elsif ( User.where(username: org_name).any?)
           #Get repos where the user logged has collaborated and belongs to the "organization" of another user
           repos_collab_user = Author.find_by(username:current_user.email).repositories.uniq
           repos_org_temp = Organization.find_by(name:org_name).repositories.uniq
@@ -170,6 +200,7 @@ class OrganizationsController < ApplicationController
       else
           #Get repos from org
          org_repos = github.organization_repositories org_name
+
       end
 
 
@@ -179,10 +210,11 @@ class OrganizationsController < ApplicationController
 
 
               #store all the info in an array
-              org_repos_not_stored << repo
+              org_repos_not_stored.push repo
           else
+
               repo_t = Repository.find_by(github_id: repo.id)
-              org_repos_stored << repo_t
+              org_repos_stored.push repo_t
           end
       end
 

@@ -43,6 +43,36 @@
                   Hasta: <%= date_field_tag :until_date %>
                   <%= submit_tag 'Filtrar', class:'btn btn-info' %>
                 <% end %>
+
+                <%= form_tag(repository_path, method: :get) do %>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="start_date">Start date</label>
+                                </div>
+
+                                <input class="form-control" as="date" type="date" id="from_date" name="from_date">
+                            </div>
+
+                        </div>
+                        <div class="col-4">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="end_date">End date</label>
+                                </div>
+
+                                <input class="form-control" as="date" type="date" id="until_date" name="until_date">
+                            </div>
+
+                        </div>
+                        <div class="col-1">
+                             <input type="submit" name="commit" class="btn btn-primary" value="Find" data-disabled-with="Find">
+                        </div>
+                    </div>
+                    </div>
+
+                <% end %>
                 <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
                   <input type="hidden" id="repo_id" name="repo_id" value="<%= @repository.id%>"></input>
                   <button class="btn btn-info" type="submit"> Update Repo </button>
