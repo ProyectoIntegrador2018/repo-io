@@ -82,13 +82,13 @@ class RepositoriesController < ApplicationController
 
     #if not exist an 'user organization' on db
     username = github.login
-    if !Organization.where(name: username).any?
-      org = Organization.new
-      org.name = username
-      org.save
-      current_user.organizations << org
-      current_user.save
-    end
+    # if !Organization.where(name: username).any?
+    #   org = Organization.new
+    #   org.name = username
+    #   org.save
+    #   current_user.organizations << org
+    #   current_user.save
+    # end
 
     @repository = Repository.new(repository_params)
     remote_repo = github.repo @repository.full_name
@@ -98,6 +98,7 @@ class RepositoriesController < ApplicationController
         #if the org exists on database
         if Organization.where(github_id: remote_repo.organization.id).any?
           @repository.organization = Organization.where(github_id: remote_repo.organization.id).first
+
         else
           org = Organization.new
           remote_org = github.org remote_repo.organization.login
@@ -114,11 +115,14 @@ class RepositoriesController < ApplicationController
           current_user.save
 
           @repository.organization = org
+
         end
       else
         @repository.organization = Organization.where(name: username).first
+
       end
 
+      @repository.save
       #the request fails if the repo is empty so is request by try catch block
       @name_repo = remote_repo.full_name
       begin
@@ -259,56 +263,56 @@ class RepositoriesController < ApplicationController
     github = Octokit::Client.new access_token: current_user.oauth_token
 
     #Get the author that belongs to the user if there is one
-    current_author = Author.find_by(username: current_user.username)
+    current_author = Author.find_by(username: current_user.email)
+
+    #Orgs names to display
+    @orgs_name = Array.new
 
     #Get the organizations that belongs to the repositories that belong to the author's user
-    @orgs = nil
     if(current_author != nil)
-        @orgs = current_author.repositories.organizations.distinct
+
+
+        temp_repos = current_author.repositories
+        temp_repos.each do  |repos|
+            org_to_add = repos.organization.name
+            @orgs_name.each do |org_added|
+                if org_to_add == org_added
+                    org_to_add = nil
+                    break
+                end
+            end
+            if !org_to_add.nil?
+                @orgs_name.push org_to_add
+            end
+        end
 
     end
 
     #Get the unique organizations that belongs to the author'repositories and to the user
     orgs_user = current_user.organizations
-    if(@orgs != nil)
-        orgs_user.each do | org_t|
-            org_temp_to_add = org_t
-            @orgs.each do |org_t_2|
-                if(org_t.id == org_t_2.id)
+
+    if(@orgs_name.size > 0)
+        orgs_user.each do | org_user|
+            #Check if org_user is already stored in @orgs
+            org_temp_to_add = org_user.name
+            @orgs_name.each do |org_name_added|
+                if(org_temp_to_add === org_name_added)
                     org_temp_to_add = nil
                     break
                 end
             end
-            if(org_temp_to_add != nil)
-                @orgs << org_temp_to_add
+
+            if(!org_temp_to_add.nil?)
+                @orgs_name.push org_temp_to_add
             end
         end
     else
-        @orgs = orgs_user
+        orgs_user.each do |org_t|
+            @orgs_name.push org_t.name
+        end
     end
 
-    repos = []
-    @orgs.each do |org|
-      org.repositories.each do |repo|
-        repos << repo
-      end
-    end
 
-    github.repos.each do |item|
-      if !Repository.where(github_id: item.id).any?
-        repo = Repository.new
-        repo.github_id = item.id
-        repo.url = item.html_url
-        repo.name = item.name
-        repo.full_name = item.full_name
-        repo.description = item.description
-        repo.size = item.size
-        repo.collaborator = item.collaborator
-        repos.push(repo)
-      end
-    end
 
-    @repositories = repos
-    @repo = Repository.new
   end
 end

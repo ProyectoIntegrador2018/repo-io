@@ -10,7 +10,11 @@ class User < ApplicationRecord
       user.save!
     end
   end
-  #has_and_belongs_to_many :organizations
+
+
   has_many :orgs_users
   has_many :organizations, through: :orgs_users
+
+
+
 end

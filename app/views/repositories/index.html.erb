@@ -1,56 +1,61 @@
 <div class="container ">
-    <% if false %>
-        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-header">
-            <img src="..." class="rounded mr-2" alt="...">
-            <strong class="mr-auto">Notification</strong>
-            <small>Just now</small>
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="toast-body">
-            <p id=notice><%= notice %></p>
-          </div>
-        </div>
-    <% end %>
+
 
     <div class="row">
         <div class="col-12 col-sm-12 py-5 px-5 ">
-            <h1 class="text-center">Repositories</h1>
+            <h1 class="text-center" style="padding: 1em 0px 0px 0px">Repositories</h1>
         </div>
     </div>
-    <div class="row bg-light">
-      <%= form_for repositories_path, method: :get do |f| %>
-        Desde:
-        <%= f.date_field :from, as: :date %>
-        Hasta:
-        <%= f.date_field :until, as: :date %>
-        <%= submit_tag "Search" %>
-      <% end %>
+    <div class="row bg-light p-4">
 
-      <%= params.inspect %>
+        <%= form_tag("orgs/repos", remote:true ,method: "get", id:"find_form" , class:"w-100") do  %>
+            <div class="row">
+                <div class="col-3">
+                    <select class="form-control" autofocus name="org_name" id="org_name">
+                        <option selected value="">Choose organization...</option>
+                        <% @orgs_name.each do |org|%>
+                            <option value="<%=org%>"><%=org%></option>
+                        <% end %>
+                    </select>
+                </div>
 
-        <div class="col-12 py-5 px-5 ">
-            <div class="dropdown allign-center">
-                <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Organizations
-                </button>
+                <div class="col-4">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="start_date">Start date</label>
+                        </div>
 
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <% @orgs.each do |org| %>
-                <%=link_to org.name , "/orgs/" + org.name, class:"dropdown-item", id: org.name, remote:true %>
+                        <input class="form-control" as="date" type="date" id="from" name="from">
+                    </div>
 
-              <% end %>
+                </div>
+                <div class="col-4">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="end_date">End date</label>
+                        </div>
+
+                        <input class="form-control" as="date" type="date" id="until" name="until">
+                    </div>
+
+                </div>
+                <div class="col-1">
+                     <input id="find_button" type="submit" class="btn btn-primary" value="Find" data-disabled-with="Find">
+                </div>
             </div>
-            </div>
-        </div>
 
-        <div id="list_repos" class="col-12 py-5 px-5">
+
+
+        <% end %>
+
+
+
+        <div id="list_repos" class=" col-12 py-5 px-5">
 
         </div>
 
     </div>
+
 
 </div>
 
@@ -75,12 +80,10 @@
     }
 
     $(document).ready(function() {
-        $('.dropdown-item').each(function(){
-            $(this).css({'cursor': 'pointer'});
-        });
 
-        $('.dropdown-item').on ('ajax:success', show_repos)
-        $('.dropdown-item').on ('ajax:error', display_error)
+        $('#find_form').on('ajax:success', show_repos)
+        $('#find_form').on('ajax:error', display_error)
+
 
 
     });
