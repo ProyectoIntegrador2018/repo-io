@@ -44,8 +44,6 @@ bower.json
 
 \.idea/workspace\.xml
 
-config/database\.yml
-
 \.idea/\.generators
 
 \.idea/\.rakeTasks
@@ -56,3 +54,5 @@ config/database\.yml
 
 # Ignore application configuration
 /config/application.yml
+
+config/database\.yml

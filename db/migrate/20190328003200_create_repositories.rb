@@ -8,7 +8,6 @@ class CreateRepositories < ActiveRecord::Migration[5.2]
       t.string :description
       t.integer :size
       t.boolean :collaborator
-
       t.timestamps
     end
   end
