@@ -1,4 +1,6 @@
 # Repo I/O
+<a href="https://codeclimate.com/github/OscarMichelH/repo-io/maintainability"><img src="https://api.codeclimate.com/v1/badges/b8b45306f5fa1f8dba21/maintainability" /></a>
+
 <img src="https://i.imgur.com/MrwhQ2D.png" width="100" height="100" />
 
 Web platform used to review and display in an elegant form the contributions done to a Github repository.
