@@ -132,18 +132,20 @@ class RepositoriesController < ApplicationController
       end
 
       if commits
+        new_commits = []
         commits.each do |c|
           cTemp = github.commit @name_repo, c.sha
           commit = Commit.new
           #if Author not exists in that repository
-          if !Author.where(username: cTemp.commit.author.email.to_s).any?
+          creator = Author.where(username: cTemp.commit.author.email.to_s)
+          if !creator.any?
             author = Author.new
             author.username = cTemp.commit.author.email.to_s
             author.name = cTemp.commit.author.name.to_s
             author.repositories << @repository
             author.save
           else
-            author = Author.where(username: cTemp.commit.author.email.to_s).first
+            author = creator.first
             if !author.repositories.where(id: @repository.id).any?
               author.repositories << @repository
             end
@@ -157,8 +159,9 @@ class RepositoriesController < ApplicationController
           commit.created = cTemp.commit.author.date
           commit.author_username = Author.where(username: cTemp.commit.author.email.to_s).first.username
           commit.repository = @repository
-          commit.save
+          new_commits << commit
         end
+        new_commits.each(&:save)
       end
 
     else
