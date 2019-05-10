@@ -190,7 +190,7 @@ class RepositoriesController < ApplicationController
   # DELETE /repositories/1
   # DELETE /repositories/1.json
   def destroy
-  
+
     @repository.destroy
     respond_to do |format|
       format.html { redirect_to repositories_path, notice: 'Repository was successfully destroyed.' }
@@ -199,9 +199,7 @@ class RepositoriesController < ApplicationController
   end
 
 def profile
-	#author.find 
-	puts("saludos Oscar---------------------------------------------------------")
-	#params[id]
+
 	@repository = Repository.find(params[:repository_id])
 	@author = Author.find(params[:id])
 
@@ -275,5 +273,5 @@ def profile
 
 
   end
-  
+
 end
