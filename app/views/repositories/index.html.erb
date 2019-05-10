@@ -48,11 +48,18 @@
 
         <% end %>
 
-
+        <div id="spinner_loading_ajax" class="col-12 py-5 px-5">
+            <div class="d-flex justify-content-center">
+              <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
+        </div>
 
         <div id="list_repos" class=" col-12 py-5 px-5">
 
         </div>
+
 
     </div>
 
@@ -81,8 +88,21 @@
 
     $(document).ready(function() {
 
-        $('#find_form').on('ajax:success', show_repos)
-        $('#find_form').on('ajax:error', display_error)
+
+
+        $("#spinner_loading_ajax").hide();
+        $(document).ajaxStart(function(){
+            $('#list_repos').html("");
+             $('#spinner_loading_ajax').show();
+        });
+        $(document).ajaxStop(function(){
+             $('#spinner_loading_ajax').hide();
+        });
+
+        $('#find_form').on('ajax:success', show_repos);
+        $('#find_form').on('ajax:error', display_error);
+
+
 
 
 
