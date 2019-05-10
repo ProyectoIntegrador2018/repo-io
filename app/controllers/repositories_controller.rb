@@ -82,89 +82,38 @@ class RepositoriesController < ApplicationController
 
     #if not exist an 'user organization' on db
     username = github.login
-    # if !Organization.where(name: username).any?
-    #   org = Organization.new
-    #   org.name = username
-    #   org.save
-    #   current_user.organizations << org
-    #   current_user.save
-    # end
 
     @repository = Repository.new(repository_params)
     remote_repo = github.repo @repository.full_name
-    if remote_repo
-      #if the repo comes from an org
-      if remote_repo.organization
-        #if the org exists on database
-        if Organization.where(github_id: remote_repo.organization.id).any?
-          @repository.organization = Organization.where(github_id: remote_repo.organization.id).first
 
-        else
-          org = Organization.new
-          remote_org = github.org remote_repo.organization.login
-          org.github_id = remote_org.id
-          org.url = remote_org.url
-          org.name = remote_org.login
-          org.public_repos = remote_org.public_repos
-          org.private_repos = remote_org.total_private_repos
-          org.total_repos = org.public_repos + org.private_repos
-          org.collaborators = remote_org.collaborators
-          org.save
-
-          current_user.organizations << org
-          current_user.save
-
-          @repository.organization = org
-
-        end
+    #if the repo comes from an org
+    if remote_repo.organization
+      #if the org exists on database
+      if Organization.where(github_id: remote_repo.organization.id).any?
+        self.organization = Organization.where(github_id: remote_repo.organization.id).first
       else
-        @repository.organization = Organization.where(name: username).first
+        org = Organization.new
+        remote_org = github.org remote_repo.organization.login
+        org.github_id = remote_org.id
+        org.url = remote_org.url
+        org.name = remote_org.login
+        org.public_repos = remote_org.public_repos
+        org.private_repos = remote_org.total_private_repos
+        org.total_repos = org.public_repos + org.private_repos
+        org.collaborators = remote_org.collaborators
+        org.save
+        current_user.organizations << org
+        current_user.save
 
+        @repository.organization = org
       end
-
-      @repository.save
-      #the request fails if the repo is empty so is request by try catch block
-      @name_repo = remote_repo.full_name
-      begin
-        commits = github.commits @name_repo
-      rescue
-        commits = nil
-      end
-
-      if commits
-        commits.each do |c|
-          cTemp = github.commit @name_repo, c.sha
-          commit = Commit.new
-          #if Author not exists in that repository
-          if !Author.where(username: cTemp.commit.author.email.to_s).any?
-            author = Author.new
-            author.username = cTemp.commit.author.email.to_s
-            author.name = cTemp.commit.author.name.to_s
-            author.repositories << @repository
-            author.save
-          else
-            author = Author.where(username: cTemp.commit.author.email.to_s).first
-            if !author.repositories.where(id: @repository.id).any?
-              author.repositories << @repository
-            end
-            author.save
-          end
-          commit.github_sha = c.sha
-          commit.message = cTemp.commit.message.to_s
-          commit.additions = cTemp.stats.additions.to_i
-          commit.deletions = cTemp.stats.deletions.to_i
-          commit.files_changed = cTemp.files.count.to_i
-          commit.created = cTemp.commit.author.date
-          commit.author_username = Author.where(username: cTemp.commit.author.email.to_s).first.username
-          commit.repository = @repository
-          commit.save
-        end
-      end
-
     else
-      @name_repo = "nil"
+      @repository.organization = Organization.where(name: username).first
     end
 
+    @repository.save
+    @repository.delay.deliver(current_user.id)
+    @name_repo = @repository&.full_name || nil
     respond_to do |format|
      if @repository.save
        format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
