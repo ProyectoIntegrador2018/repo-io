@@ -105,7 +105,7 @@ class OrganizationsController < ApplicationController
           repos_after_start_date = Array.new
           if (!start_date.nil? && !end_date.nil?)
              repos["repos_stored"].each do |repo|
-                if repo.commits.where("commits.created > ? && commits.created < ?", start_date, end_date).any?
+                if repo.commits.where("commits.created > ? AND commits.created < ?", start_date, end_date).any?
                     repos_stored.push repo
                 end
              end
@@ -182,7 +182,7 @@ class OrganizationsController < ApplicationController
                   org_repos << repo_temp
               end
           end
-      elsif ( User.where(username: org_name).any?)
+      elsif (User.where(username: org_name).any?)
           #Get repos where the user logged has collaborated and belongs to the "organization" of another user
           repos_collab_user = Author.find_by(username:current_user.email).repositories.uniq
           repos_org_temp = Organization.find_by(name:org_name).repositories.uniq
