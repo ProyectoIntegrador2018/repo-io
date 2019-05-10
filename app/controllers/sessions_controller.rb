@@ -2,7 +2,7 @@ class SessionsController < ApplicationController
   def new
       if current_user
            store_orgs_needed()
-           
+
            redirect_to repositories_path
       end
 
@@ -33,15 +33,15 @@ class SessionsController < ApplicationController
   def store_orgs_needed
 
       github = Octokit::Client.new access_token: current_user.oauth_token
-
+      current_user_temp = current_user
       #if not exist an 'user organization' on db save it
       username = github.login
       if !Organization.where(name: username).any?
         org = Organization.new
         org.name = username
         org.save
-        current_user.organizations << org
-        current_user.save!
+        current_user_temp.organizations << org
+        current_user_temp.save!
       end
 
       #Save missing organizations for the user logged in
@@ -50,9 +50,10 @@ class SessionsController < ApplicationController
       #For each org..
       orgs.each do |org_t|
           name_org = org_t.login
+
           #Check if its already in the database
           #If it exists should we edited? (modify code to allow this)
-          if !Organization.exists?(:github_id => org_t.id)
+          if !Organization.exists?(github_id: org_t.id)
 
               #Get detail info of specific org from GITHUB
               org_detail = github.org name_org
@@ -72,10 +73,13 @@ class SessionsController < ApplicationController
               temp_org.save!
 
               #Save organization into user relation
-              current_user.organizations << temp_org
-              current_user.save!
+              current_user_temp.organizations << temp_org
+              current_user_temp.save!
 
+          elsif !current_user_temp.organizations.find_by_github_id(org_t.id) #Check if user already belongs to organization, if not add him to it
 
+              current_user_temp.organizations << Organization.find_by_github_id(org_t.id) #Add to current user that org
+              current_user_temp.save!
           end
       end
 

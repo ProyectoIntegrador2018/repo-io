@@ -71,12 +71,12 @@ class OrganizationsController < ApplicationController
       start_date = nil
       end_date = nil
 
-      if !params["from"].nil?
-          start_date = params["from"].to_date
+      if !params["from"].blank?
+          start_date = params["from"].to_date - 1.days
       end
 
-      if !params["until"].nil?
-          end_date = params["until"].to_date
+      if !params["until"].blank?
+          end_date = params["until"].to_date + 1.days
       end
 
       if !params["org_name"].blank?
