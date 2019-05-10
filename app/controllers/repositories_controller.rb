@@ -30,7 +30,7 @@ class RepositoriesController < ApplicationController
       @username = current_user.username
       @data_in_series = []
       @authors.each do |author|
-        @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).sum(&:additions) + @repository.commits.where(author_username: author.username).sum(&:files_changed) ])
+        @data_in_series.push([author.name, @repository.commits.where(author_username: author.username).count])
       end
     end
 
@@ -241,11 +241,22 @@ class RepositoriesController < ApplicationController
   # DELETE /repositories/1
   # DELETE /repositories/1.json
   def destroy
+  
     @repository.destroy
     respond_to do |format|
       format.html { redirect_to repositories_path, notice: 'Repository was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+def profile
+	#author.find 
+	puts("saludos Oscar---------------------------------------------------------")
+	#params[id]
+	@repository = Repository.find(params[:repository_id])
+	@author = Author.find(params[:id])
+
+	@commits = @repository.commits.where(author_username: @author.username)
   end
 
   private
@@ -315,4 +326,5 @@ class RepositoriesController < ApplicationController
 
 
   end
+  
 end

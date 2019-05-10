@@ -13,5 +13,7 @@ Rails.application.routes.draw do
 
 
   #resources :organizations
-  resources :repositories
+  resources :repositories do
+	get '/profile/:id', to: 'repositories#profile', as: 'profile'
+  end
 end
