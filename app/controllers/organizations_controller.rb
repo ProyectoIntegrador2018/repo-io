@@ -184,7 +184,7 @@ class OrganizationsController < ApplicationController
           end
       elsif (User.where(username: org_name).any?)
           #Get repos where the user logged has collaborated and belongs to the "organization" of another user
-          repos_collab_user = Author.find_by(username:current_user.email).repositories.uniq
+          repos_collab_user = Author.find_by(username:current_user.email.to_s).repositories.uniq
           repos_org_temp = Organization.find_by(name:org_name).repositories.uniq
 
           repos_collab_user.each do |repo_user|
