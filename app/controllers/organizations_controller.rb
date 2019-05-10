@@ -84,15 +84,16 @@ class OrganizationsController < ApplicationController
           #Get repos from specific organization
           repos_from_org = self.get_repos_from_orgs org_name
 
-          pp "WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-          pp repos_from_org["repos_stored"]
-
           #Filter repos to send by specified date filter
           repos_to_send = filter_org_repos_between repos_from_org, start_date, end_date
 
 
           #Render partial and send it as a string
           render json: { repos: render_to_string('repositories/_repo', layout: false, locals: {org_repos_stored: repos_to_send['repos_stored'], org_repos_not_stored: repos_to_send['repos_not_stored'] }) }
+      else
+          respond_to do |format|
+              format.json { render :json => { :error_message => @campaign.errors.full_messages }, :status => :unprocessable_entity }
+          end
       end
 
   end

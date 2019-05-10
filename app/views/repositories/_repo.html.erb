@@ -12,7 +12,7 @@
                             <em><%= repo.url %></em>
                         </div>
                         <div class="col-4 ">
-                            <%= link_to 'Delete', repo, class:"float-right", method: :delete, data: { confirm: 'Are you sure?' } %>
+                            <%= link_to 'Delete', repo, class:"float-right delete_button", method: :delete, data: { confirm: 'Are you sure?' } %>
                         </div>
                     </div>
                 </li>
@@ -37,7 +37,7 @@
                                 <%= f.hidden_field :description, value: repo2.description %>
                                 <%= f.hidden_field :size, value: repo2.size %>
                                 <%= f.hidden_field :collaborator, value: repo2.collaborators_url %>
-                                <%= button_tag 'Add', class: 'button is-success float-right' %>
+                                <%= button_tag 'Add', class: 'button is-success float-right add_button ' %>
                             <% end %>
                         </div>
                     </div>
