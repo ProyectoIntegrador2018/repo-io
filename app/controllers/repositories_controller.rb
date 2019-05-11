@@ -112,7 +112,11 @@ class RepositoriesController < ApplicationController
     end
 
     @repository.save
-    @repository.delay.deliver(current_user.id)
+    #@repository.delay.deliver(current_user.id)
+
+    #EXECUTE CUSTOM job
+    Delayed::Job.enqueue RepoUpdater::ProcessNewReposContentJob.new(@repository.id, current_user.id)
+
     @name_repo = @repository&.full_name || nil
     respond_to do |format|
      if @repository.save
@@ -198,8 +202,20 @@ class RepositoriesController < ApplicationController
     end
   end
 
-def profile
+  def check_if_is_updating repo_id
+      respond_to do |format|
+          if @repository.save
+              format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
+              format.json { render :show, status: :created, location: @repository }
+          else
+              format.html { render :new }
+              format.json { render json: @repository.errors, status: :unprocessable_entity }
+          end
+      end
+  end
 
+
+  def profile
 	@repository = Repository.find(params[:repository_id])
 	@author = Author.find(params[:id])
 
