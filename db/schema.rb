@@ -48,6 +48,10 @@ ActiveRecord::Schema.define(version: 2019_05_10_140522) do
     t.string "queue"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer "delayed_reference_id"
+    t.string "delayed_reference_type"
+    t.index ["delayed_reference_id"], name: "delayed_jobs_delayed_reference_id"
+    t.index ["delayed_reference_type"], name: "delayed_jobs_delayed_reference_type"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 

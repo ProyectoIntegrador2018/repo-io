@@ -112,7 +112,11 @@ class RepositoriesController < ApplicationController
     end
 
     @repository.save
-    @repository.delay.deliver(current_user.id)
+    #@repository.delay.deliver(current_user.id)
+
+    #EXECUTE CUSTOM job
+    Delayed::Job.enqueue RepoUpdater::ProcessNewReposContentJob.new(@repository.id, current_user.id)
+
     @name_repo = @repository&.full_name || nil
     respond_to do |format|
      if @repository.save
@@ -198,8 +202,29 @@ class RepositoriesController < ApplicationController
     end
   end
 
-def profile
+  def check_if_its_updating
+      repo_id = params[:repo_id]
 
+      if Delayed::Job.where(delayed_reference_id: repo_id.to_i, delayed_reference_type: 'RepoUpdater::NewReposContent').any?
+          render json:{updating: "yes"}
+      else
+          render json:{updating: "no"}
+      end
+      # respond_to do |format|
+      #     if Delayed::Job.where(delayed_reference_id: repo_id.to_i, delayed_reference_type: 'RepoUpdater::NewReposContent').any?
+      #         format.json do
+      #             render json{updating:'true'}.to_json
+      #         end
+      #     else
+      #         format.json do
+      #             render json{updating:'false'}.to_json
+      #         end
+      #     end
+      # end
+  end
+
+
+  def profile
 	@repository = Repository.find(params[:repository_id])
 	@author = Author.find(params[:id])
 

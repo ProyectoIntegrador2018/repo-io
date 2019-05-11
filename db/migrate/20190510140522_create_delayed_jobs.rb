@@ -11,9 +11,13 @@ class CreateDelayedJobs < ActiveRecord::Migration[5.2]
       table.string :locked_by                          # Who is working on this object (if locked)
       table.string :queue                              # The name of the queue this job is in
       table.timestamps null: true
+      table.integer :delayed_reference_id              # Id for the model job it is being used for
+      table.string  :delayed_reference_type            # The name of the model it is being used for
     end
 
     add_index :delayed_jobs, [:priority, :run_at], name: "delayed_jobs_priority"
+    add_index :delayed_jobs, [:delayed_reference_id],   :name => 'delayed_jobs_delayed_reference_id'
+    add_index :delayed_jobs, [:delayed_reference_type], :name => 'delayed_jobs_delayed_reference_type'
   end
 
   def self.down
