@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   post 'add', to: 'repositories#create', as: 'add_repo'
   root to: 'sessions#new'
 
-
+  get 'repositories/:repo_id/status', to:'repositories#check_if_its_updating'
 
   #resources :organizations
   resources :repositories do

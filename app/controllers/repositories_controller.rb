@@ -202,16 +202,25 @@ class RepositoriesController < ApplicationController
     end
   end
 
-  def check_if_is_updating repo_id
-      respond_to do |format|
-          if @repository.save
-              format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
-              format.json { render :show, status: :created, location: @repository }
-          else
-              format.html { render :new }
-              format.json { render json: @repository.errors, status: :unprocessable_entity }
-          end
+  def check_if_its_updating
+      repo_id = params[:repo_id]
+
+      if Delayed::Job.where(delayed_reference_id: repo_id.to_i, delayed_reference_type: 'RepoUpdater::NewReposContent').any?
+          render json:{updating: "yes"}
+      else
+          render json:{updating: "no"}
       end
+      # respond_to do |format|
+      #     if Delayed::Job.where(delayed_reference_id: repo_id.to_i, delayed_reference_type: 'RepoUpdater::NewReposContent').any?
+      #         format.json do
+      #             render json{updating:'true'}.to_json
+      #         end
+      #     else
+      #         format.json do
+      #             render json{updating:'false'}.to_json
+      #         end
+      #     end
+      # end
   end
 
 
