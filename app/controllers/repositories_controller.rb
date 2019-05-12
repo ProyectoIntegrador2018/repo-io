@@ -112,7 +112,11 @@ class RepositoriesController < ApplicationController
     end
 
     @repository.save
-    @repository.delay.deliver(current_user.id)
+    #@repository.delay.deliver(current_user.id)
+
+    #EXECUTE CUSTOM job
+    Delayed::Job.enqueue RepoUpdater::ProcessNewReposContentJob.new(@repository.id, current_user.id)
+
     @name_repo = @repository&.full_name || nil
     respond_to do |format|
      if @repository.save
@@ -190,7 +194,7 @@ class RepositoriesController < ApplicationController
   # DELETE /repositories/1
   # DELETE /repositories/1.json
   def destroy
-  
+
     @repository.destroy
     respond_to do |format|
       format.html { redirect_to repositories_path, notice: 'Repository was successfully destroyed.' }
@@ -198,10 +202,29 @@ class RepositoriesController < ApplicationController
     end
   end
 
-def profile
-	#author.find 
-	puts("saludos Oscar---------------------------------------------------------")
-	#params[id]
+  def check_if_its_updating
+      repo_id = params[:repo_id]
+
+      if Delayed::Job.where(delayed_reference_id: repo_id.to_i, delayed_reference_type: 'RepoUpdater::NewReposContent').any?
+          render json:{updating: "yes"}
+      else
+          render json:{updating: "no"}
+      end
+      # respond_to do |format|
+      #     if Delayed::Job.where(delayed_reference_id: repo_id.to_i, delayed_reference_type: 'RepoUpdater::NewReposContent').any?
+      #         format.json do
+      #             render json{updating:'true'}.to_json
+      #         end
+      #     else
+      #         format.json do
+      #             render json{updating:'false'}.to_json
+      #         end
+      #     end
+      # end
+  end
+
+
+  def profile
 	@repository = Repository.find(params[:repository_id])
 	@author = Author.find(params[:id])
 
@@ -275,5 +298,5 @@ def profile
 
 
   end
-  
+
 end
