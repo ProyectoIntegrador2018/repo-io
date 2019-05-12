@@ -27,7 +27,11 @@
                         <% @authors.each do |author| %>
                             <li class="list-group-item">
                                  <div class="row">
-                                   <div class="col-3 offset-1"><strong>Name:</strong> <%= link_to author.name, repository_profile_path(author) %></div>
+                                   <div class="col-3 offset-1">
+                                       <strong>Name:
+                                           <a href="/repositories/<%=@repository.id%>/profile/<%=author.id%>"><%=author.name%></a>
+                                       </strong>
+                                   </div>
                                  <% if @from_date && @until_date %>
                                      <div class="col-2"><strong>A:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) %> </div>
                                      <div class="col-2"><strong>D:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:deletions) %> </div>

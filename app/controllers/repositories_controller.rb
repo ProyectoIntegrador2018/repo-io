@@ -107,7 +107,7 @@ class RepositoriesController < ApplicationController
         org.save!
         current_user.organizations << org
         current_user.save!
-
+        
         @repository.organization = org
         #@repository.save!
       end
