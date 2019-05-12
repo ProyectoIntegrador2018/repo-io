@@ -1,69 +1,85 @@
-<div class="container ">
+<div class="container-fluid">
 
-
-    <div class="row">
-        <div class="col-12 col-sm-12 py-5 px-5 ">
-            <h1 class="text-center" style="padding: 1em 0px 0px 0px">Repositories</h1>
-        </div>
+  <div class="row bg-light">
+    <div class="col-12 col-sm-12 py-3">
+      <div class="container">
+        <h3 class="text-left" style="padding: 2.8em 0px 0px 0px">Repositories</h3>
+      </div>
     </div>
-    <div class="row bg-light p-4">
+  </div>
 
-        <%= form_tag("orgs/repos", remote:true ,method: "get", id:"find_form" , class:"w-100") do  %>
-            <div class="row">
-                <div class="col-3">
-                    <select class="form-control" autofocus name="org_name" id="org_name">
-                        <option selected value="">Choose organization...</option>
-                        <% @orgs_name.each do |org|%>
-                            <option value="<%=org%>"><%=org%></option>
-                        <% end %>
-                    </select>
-                </div>
+  <div class="row">
+    <div class="col-12 col-sm-12 py-3">
+      <div class="container" style="padding-left: 0px;padding-right: 0px;">
 
-                <div class="col-4">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="start_date">Start date</label>
-                        </div>
+        <div class="row p-4">
 
-                        <input class="form-control" as="date" type="date" id="from" name="from">
-                    </div>
-
-                </div>
-                <div class="col-4">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="end_date">End date</label>
-                        </div>
-
-                        <input class="form-control" as="date" type="date" id="until" name="until">
-                    </div>
-
-                </div>
-                <div class="col-1">
-                     <input id="find_button" type="submit" class="btn btn-primary" value="Find" data-disabled-with="Find">
-                </div>
+          <%= form_tag("orgs/repos", remote:true ,method: "get", id:"find_form" , class:"w-100") do  %>
+          <div class="row">
+            <div class="col-3">
+              <select class="form-control" autofocus name="org_name" id="org_name">
+                <option selected value="">Choose organization...</option>
+                <% @orgs_name.each do |org|%>
+                <option value="<%=org%>"><%=org%></option>
+                <% end %>
+              </select>
             </div>
 
+            <div class="col-4">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <label class="input-group-text" for="start_date">Start date</label>
+                </div>
+
+                <input class="form-control" as="date" type="date" id="from" name="from">
+              </div>
+
+            </div>
+            <div class="col-4">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <label class="input-group-text" for="end_date">End date</label>
+                </div>
+
+                <input class="form-control" as="date" type="date" id="until" name="until">
+              </div>
+
+            </div>
+            <div class="col-1">
+              <input id="find_button" type="submit" class="btn btn-secondary" value="Find" data-disabled-with="Find">
+            </div>
+          </div>
 
 
-        <% end %>
 
-        <div class="col-12 py-5 px-5 spinner_loading_ajax">
+          <% end %>
+
+
+
+
+        </div>
+
+        <div class="row p-4">
+
+          <div class="col-12 py-5 px-5 spinner_loading_ajax">
             <div class="d-flex justify-content-center">
               <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
               </div>
             </div>
-        </div>
-
-        <div id="list_repos" class=" col-12 py-5 px-5">
+          </div>
 
         </div>
 
+        <div class="row p-4">
+          <div id="list_repos" class=" col-12" style="padding-left: 0px;padding-right: 0px;">
 
+          </div>
+        </div>
+
+      </div>
     </div>
-
-
+  </div>
 </div>
 
 
@@ -74,55 +90,55 @@
 <% end %>
 
 <script>
-    function show_repos(event, data){
-        //data.repos contains partial rendered into string
-        $("#list_repos").html(data.repos);
-        $('.delete_button').on("click", function(){
-            $(this).hide();
-            $(this).parent().append("<button class='btn btn-primary float-right' type='button' disabled><span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span><span class='sr-only'>Loading...</span> </button>");
-
-        });
-        $('.add_button').on("click", function(){
-            $(this).hide();
-            $(this).parent().append("<button class='btn btn-primary float-right' type='button' disabled><span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span><span class='sr-only'>Loading...</span> </button>");
-        });
-
-    }
-
-    function display_error(event, data){
-
-        console.log(data);
-    }
-
-    function show_general_spinner(button){
-
-    }
-
-    $(document).ready(function() {
-
-
-
-        $(".spinner_loading_ajax").hide();
-
-        $(document).ajaxStart(function(){
-            if( $("#org_name option:selected").val() != ""){
-                $('#list_repos').html("");
-                $('.spinner_loading_ajax').show();
-            }
-
-        });
-        $(document).ajaxStop(function(){
-             $('.spinner_loading_ajax').hide();
-        });
-
-        $('#find_form').on('ajax:success', show_repos);
-        $('#find_form').on('ajax:error', display_error);
-
-
-
-
+  function show_repos(event, data){
+    //data.repos contains partial rendered into string
+    $("#list_repos").html(data.repos);
+    $('.delete_button').on("click", function(){
+      $(this).hide();
+      $(this).parent().append("<button class='btn btn-primary float-right' type='button' disabled><span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span><span class='sr-only'>Loading...</span> </button>");
 
     });
+    $('.add_button').on("click", function(){
+      $(this).hide();
+      $(this).parent().append("<button class='btn btn-primary float-right' type='button' disabled><span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span><span class='sr-only'>Loading...</span> </button>");
+    });
+
+  }
+
+  function display_error(event, data){
+
+    console.log(data);
+  }
+
+  function show_general_spinner(button){
+
+  }
+
+  $(document).ready(function() {
+
+
+
+    $(".spinner_loading_ajax").hide();
+
+    $(document).ajaxStart(function(){
+      if( $("#org_name option:selected").val() != ""){
+        $('#list_repos').html("");
+        $('.spinner_loading_ajax').show();
+      }
+
+    });
+    $(document).ajaxStop(function(){
+      $('.spinner_loading_ajax').hide();
+    });
+
+    $('#find_form').on('ajax:success', show_repos);
+    $('#find_form').on('ajax:error', display_error);
+
+
+
+
+
+  });
 
 
 </script>
