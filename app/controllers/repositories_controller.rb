@@ -90,7 +90,10 @@ class RepositoriesController < ApplicationController
     if remote_repo.organization
       #if the org exists on database
       if Organization.where(github_id: remote_repo.organization.id).any?
-        self.organization = Organization.where(github_id: remote_repo.organization.id).first
+        org_t = Organization.where(github_id: remote_repo.organization.id).first
+        current_user.organizations << org_t
+        current_user.save!
+        @repository.organization = org_t
       else
         org = Organization.new
         remote_org = github.org remote_repo.organization.login
@@ -101,26 +104,32 @@ class RepositoriesController < ApplicationController
         org.private_repos = remote_org.total_private_repos
         org.total_repos = org.public_repos + org.private_repos
         org.collaborators = remote_org.collaborators
-        org.save
+        org.save!
         current_user.organizations << org
-        current_user.save
-
+        current_user.save!
+        
         @repository.organization = org
+        #@repository.save!
       end
     else
       @repository.organization = Organization.where(name: username).first
     end
 
-    @repository.save
-    @repository.delay.deliver(current_user.id)
+    #@repository.delay.deliver(current_user.id)
+
+
+
     @name_repo = @repository&.full_name || nil
     respond_to do |format|
-     if @repository.save
-       format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
-       format.json { render :show, status: :created, location: @repository }
+     if @repository.save!
+         #EXECUTE CUSTOM job
+         Delayed::Job.enqueue RepoUpdater::ProcessNewReposContentJob.new(@repository.id, current_user.id)
+
+         format.html { redirect_to @repository, notice: 'Repository was successfully created.' }
+         format.json { render :show, status: :created, location: @repository }
      else
-       format.html { render :new }
-       format.json { render json: @repository.errors, status: :unprocessable_entity }
+         format.html { redirect_to repositories_path, notice:'Repository was not able to be created' }
+         format.json { render json: @repository.errors, status: :unprocessable_entity }
      end
     end
   end
@@ -190,7 +199,7 @@ class RepositoriesController < ApplicationController
   # DELETE /repositories/1
   # DELETE /repositories/1.json
   def destroy
-  
+
     @repository.destroy
     respond_to do |format|
       format.html { redirect_to repositories_path, notice: 'Repository was successfully destroyed.' }
@@ -198,10 +207,29 @@ class RepositoriesController < ApplicationController
     end
   end
 
-def profile
-	#author.find 
-	puts("saludos Oscar---------------------------------------------------------")
-	#params[id]
+  def check_if_its_updating
+      repo_id = params[:repo_id]
+
+      if Delayed::Job.where(delayed_reference_id: repo_id.to_i, delayed_reference_type: 'RepoUpdater::NewReposContent').any?
+          render json:{updating: "yes"}
+      else
+          render json:{updating: "no"}
+      end
+      # respond_to do |format|
+      #     if Delayed::Job.where(delayed_reference_id: repo_id.to_i, delayed_reference_type: 'RepoUpdater::NewReposContent').any?
+      #         format.json do
+      #             render json{updating:'true'}.to_json
+      #         end
+      #     else
+      #         format.json do
+      #             render json{updating:'false'}.to_json
+      #         end
+      #     end
+      # end
+  end
+
+
+  def profile
 	@repository = Repository.find(params[:repository_id])
 	@author = Author.find(params[:id])
 
@@ -275,5 +303,5 @@ def profile
 
 
   end
-  
+
 end

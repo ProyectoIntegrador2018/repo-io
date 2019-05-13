@@ -48,7 +48,7 @@
 
         <% end %>
 
-        <div id="spinner_loading_ajax" class="col-12 py-5 px-5">
+        <div class="col-12 py-5 px-5 spinner_loading_ajax">
             <div class="d-flex justify-content-center">
               <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
@@ -77,7 +77,15 @@
     function show_repos(event, data){
         //data.repos contains partial rendered into string
         $("#list_repos").html(data.repos);
+        $('.delete_button').on("click", function(){
+            $(this).hide();
+            $(this).parent().append("<button class='btn btn-primary float-right' type='button' disabled><span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span><span class='sr-only'>Loading...</span> </button>");
 
+        });
+        $('.add_button').on("click", function(){
+            $(this).hide();
+            $(this).parent().append("<button class='btn btn-primary float-right' type='button' disabled><span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span><span class='sr-only'>Loading...</span> </button>");
+        });
 
     }
 
@@ -86,17 +94,25 @@
         console.log(data);
     }
 
+    function show_general_spinner(button){
+
+    }
+
     $(document).ready(function() {
 
 
 
-        $("#spinner_loading_ajax").hide();
+        $(".spinner_loading_ajax").hide();
+
         $(document).ajaxStart(function(){
-            $('#list_repos').html("");
-             $('#spinner_loading_ajax').show();
+            if( $("#org_name option:selected").val() != ""){
+                $('#list_repos').html("");
+                $('.spinner_loading_ajax').show();
+            }
+
         });
         $(document).ajaxStop(function(){
-             $('#spinner_loading_ajax').hide();
+             $('.spinner_loading_ajax').hide();
         });
 
         $('#find_form').on('ajax:success', show_repos);
