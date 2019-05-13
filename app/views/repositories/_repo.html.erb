@@ -1,48 +1,48 @@
 <div class="list-group">
-    <ul style="padding-left: 0px;">
-        <% if org_repos_stored.length > 0%>
-            <% org_repos_stored.each do |repo| %>
-                <li class="container-fluid list-group-item">
-                    <div class="row">
+  <ul style="padding-left: 0px;">
+    <% if org_repos_stored.length > 0%>
+    <% org_repos_stored.each do |repo| %>
+    <li class="container-fluid list-group-item">
+      <div class="row">
 
-                        <div class="col-4">
-                          <strong><a href="/repositories/<%= repo.id %>"><%=repo.name%></a></strong>
-                        </div>
-                        <div class="col-4">
-                            <em><%= repo.url %></em>
-                        </div>
-                        <div class="col-4 ">
-                            <%= link_to 'Delete', repo, class:"float-right delete_button btn btn-warning btn-repo", method: :delete, data: { confirm: 'Are you sure?' } %>
-                        </div>
-                    </div>
-                </li>
-            <% end %>
-        <% end %>
-        <% if org_repos_not_stored.length > 0 %>
-            <% org_repos_not_stored.each do |repo2| %>
-                <li class="container-fluid list-group-item">
-                    <div class="row">
-                        <div class="col-4">
-                            <p><%=repo2.name%></p>
-                        </div>
-                        <div class="col-4">
-                            <em><%= repo2.url %></em>
-                        </div>
-                        <div class="col-4">
-                            <%= form_for (Repository.new) do |f| %>
-                                <%= f.hidden_field :github_id, value: repo2.id %>
-                                <%= f.hidden_field :name, value: repo2.name %>
-                                <%= f.hidden_field :url, value: repo2.url %>
-                                <%= f.hidden_field :full_name, value: repo2.full_name %>
-                                <%= f.hidden_field :description, value: repo2.description %>
-                                <%= f.hidden_field :size, value: repo2.size %>
-                                <%= f.hidden_field :collaborator, value: repo2.collaborators_url %>
-                                <%= button_tag 'Add', class: 'button is-success float-right add_button btn btn-success btn-repo' %>
-                            <% end %>
-                        </div>
-                    </div>
-                </li>
-            <% end %>
-        <% end %>
-    </ul>
+        <div class="col-4">
+          <strong><a href="/repositories/<%= repo.id %>"><%=repo.name%></a></strong>
+        </div>
+        <div class="col-4">
+          <em><%= repo.url %></em>
+        </div>
+        <div class="col-4 ">
+          <%= link_to 'Delete', repo, class:"float-right delete_button btn btn-warning btn-repo", method: :delete, data: { confirm: 'Are you sure?' } %>
+        </div>
+      </div>
+    </li>
+    <% end %>
+    <% end %>
+    <% if org_repos_not_stored.length > 0 %>
+    <% org_repos_not_stored.each do |repo2| %>
+    <li class="container-fluid list-group-item">
+      <div class="row">
+        <div class="col-4">
+          <p><%=repo2.name%></p>
+        </div>
+        <div class="col-4">
+          <em><%= repo2.url %></em>
+        </div>
+        <div class="col-4">
+          <%= form_for (Repository.new) do |f| %>
+          <%= f.hidden_field :github_id, value: repo2.id %>
+          <%= f.hidden_field :name, value: repo2.name %>
+          <%= f.hidden_field :url, value: repo2.url %>
+          <%= f.hidden_field :full_name, value: repo2.full_name %>
+          <%= f.hidden_field :description, value: repo2.description %>
+          <%= f.hidden_field :size, value: repo2.size %>
+          <%= f.hidden_field :collaborator, value: repo2.collaborators_url %>
+          <%= button_tag 'Add', class: 'button is-success float-right add_button btn btn-success btn-repo' %>
+          <% end %>
+        </div>
+      </div>
+    </li>
+    <% end %>
+    <% end %>
+  </ul>
 </div>
