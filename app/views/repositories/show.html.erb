@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <div class="row bg-light">
     <div class="col-sm-12 py-5 px-5 ">
-      <h1 class="text-center" style="padding: 1em 0px 0px 0px"><%= @repository.name %></h1>
+      <h1 class="text-center" style="padding: 1em 0em 0px 0px"><%= @repository.name %></h1>
       <p class="text-center"><%= @repository.description %></p>
       <p id="notification" class="text-center">
         <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
@@ -9,7 +9,7 @@
       </p>
     </div>
   </div>
-  
+
   <div class="row bg-white">
     <div class="col-sm-4">
       <%= high_chart("some_id", @chart) %>
