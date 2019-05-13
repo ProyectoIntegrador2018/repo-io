@@ -33,15 +33,13 @@
                                        </strong>
                                    </div>
                                  <% if @from_date && @until_date %>
-                                     <div class="col-2"><strong>A:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) %> </div>
-                                     <div class="col-2"><strong>D:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:deletions) %> </div>
-                                     <div class="col-2"><strong>M:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:files_changed) %> </div>
-                                     <div class="col-2"><strong>C:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).count %> </div>
+                                     <div class="col-2"><strong>Additions:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) %> </div>
+                                     <div class="col-2"><strong>Deletions:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:deletions) %> </div>
+                                     <div class="col-2"><strong>Commits:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).count %> </div>
                                  <% else %>
-                                     <div class="col-2"><strong>A:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:additions) %> </div>
-                                     <div class="col-2"><strong>D:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:deletions) %> </div>
-                                     <div class="col-2"><strong>M:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:files_changed) %> </div>
-                                     <div class="col-2"><strong>C:</strong> <%= @repository.commits.where(author_username: author.username).count %> </div>
+                                     <div class="col-2"><strong>Additions:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:additions) %> </div>
+                                     <div class="col-2"><strong>Deletions:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:deletions) %> </div>
+                                     <div class="col-2"><strong>Commits:</strong> <%= @repository.commits.where(author_username: author.username).count %> </div>
                                  <% end %>
                                  </div>
                             </li>

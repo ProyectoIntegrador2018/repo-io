@@ -17,54 +17,19 @@
                                  <div class="row">
 								 <% if @from_date && @until_date %>
                                    <div class="col-3 offset-1"><strong>Message:</strong> <%= commit.message %></div>
-                                     <div class="col-2"><strong>A:</strong> <%= commit.additions %> </div>
-                                     <div class="col-2"><strong>D:</strong> <%= commit.deletions %> </div>
-                                     <div class="col-2"><strong>M:</strong> <%= commit.files_changed %> </div>
-                                     <div class="col-2"><strong>C:</strong> <%= commit.created %> </div>
+                                     <div class="col-2"><strong>Additions:</strong> <%= commit.additions %> </div>
+                                     <div class="col-2"><strong>Deletions:</strong> <%= commit.deletions %> </div>
+                                     <div class="col-2"><strong>Created:</strong> <%= commit.created %> </div>
                                  <% else %>
 									 <div class="col-3 offset-1"><strong>Message:</strong> <%= commit.message %></div>
-                                     <div class="col-2"><strong>A:</strong> <%= commit.additions %> </div>
-                                     <div class="col-2"><strong>D:</strong> <%= commit.deletions %> </div>
-                                     <div class="col-2"><strong>M:</strong> <%= commit.files_changed %> </div>
-                                     <div class="col-2"><strong>C:</strong> <%= commit.created %> </div>
+                                     <div class="col-2"><strong>Additions:</strong> <%= commit.additions %> </div>
+                                     <div class="col-2"><strong>Deletions:</strong> <%= commit.deletions %> </div>
+                                     <div class="col-2"><strong>Created:</strong> <%= commit.created %> </div>
                                  <% end %>
                                  </div>
                             </li>
                         <%end%>
                     </ul>
-                </div>
-            </div>
-            <div class="row" style="padding: 1em 0px 0px 0px">
-                <div class="col-12" align="right">
-                    <%= form_tag(repository_path, method: :get) do %>
-                        <div class="row">
-                            <div class="col-4 offset-2">
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <label class="input-group-text" for="start_date">Start date</label>
-                                    </div>
-
-                                    <input class="form-control" as="date" type="date" id="from_date" name="from_date">
-                                </div>
-
-                            </div>
-                            <div class="col-4">
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <label class="input-group-text" for="end_date">End date</label>
-                                    </div>
-
-                                    <input class="form-control" as="date" type="date" id="until_date" name="until_date">
-                                </div>
-
-                            </div>
-                            <div class="col-1">
-                                 <input type="submit" name="commit" class="btn btn-info" value="Filter" data-disabled-with="Filter">
-                            </div>
-                        </div>
-                        </div>
-
-                    <% end %>
                 </div>
             </div>
         </div>
