@@ -1,17 +1,19 @@
-<div class="container-fluid">
+<div class="container">
   <div class="row bg-light">
-    <div class="col-sm-12 py-5 px-5 ">
-      <h1 class="text-center" style="padding: 1em 0em 0px 0px"><%= @repository.name %></h1>
-      <p class="text-center"><%= @repository.description %></p>
+    <div class="col-sm-12 py-5 ">
+      <h2  style="padding: 1em 0em 0px 0px"><%= @repository.name %></h2>
+      <p ><%= @repository.description %></p>
       <p id="notification" class="text-center">
         <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
         Please wait, the information is being stored ...
       </p>
     </div>
   </div>
+</div>
+<div class="container-fluid">
   <div class="row">
-      <div class="col-8" align="right">
-          <div class="container px-5">
+    <div class="col-12 col-sm-12">
+        <div class="container">
               <%= form_tag(repository_path, method: :get) do %>
               <div class="row">
                 <div class="col-4 offset-2">
@@ -35,7 +37,7 @@
 
                 </div>
                 <div class="col-1">
-                  <input type="submit" name="commit" class="btn btn-info" value="Filter" data-disabled-with="Filter">
+                  <input type="submit" name="commit" class="btn btn-secondary" value="Filter" data-disabled-with="Filter">
                 </div>
               </div>
               <% end %>
@@ -100,28 +102,7 @@
                       </tbody>
                 </table>
 
-                <ul class="list-group" data-spy="scroll" style="overflow: scroll; max-height: 300px;">
-                  <% @authors.each do |author| %>
-                  <li class="list-group-item">
-                    <div class="row">
-                      <div class="col-3 offset-1">
-                        <strong>Name:
-                          <a href="/repositories/<%=@repository.id%>/profile/<%=author.id%>"><%=author.name%></a>
-                        </strong>
-                      </div>
-                      <% if @from_date && @until_date %>
-                      <div class="col-2"><strong>Additions:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) %> </div>
-                      <div class="col-2"><strong>Deletions:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:deletions) %> </div>
-                      <div class="col-2"><strong>Commits:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).count %> </div>
-                      <% else %>
-                      <div class="col-2"><strong>Additions:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:additions) %> </div>
-                      <div class="col-2"><strong>Deletions:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:deletions) %> </div>
-                      <div class="col-2"><strong>Commits:</strong> <%= @repository.commits.where(author_username: author.username).count %> </div>
-                      <% end %>
-                    </div>
-                  </li>
-                  <%end%>
-                </ul>
+
               </div>
             </div>
       </div>
@@ -129,7 +110,7 @@
         <div class="col-12" align="right">
           <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
           <input type="hidden" id="repo_id" name="repo_id" value="<%= @repository.id%>"></input>
-          <button class="btn btn-info" type="submit"> Update Repo </button>
+          <button class="btn btn-secondary" type="submit"> Update Repo </button>
           <% end -%>
         </div>
       </div>
