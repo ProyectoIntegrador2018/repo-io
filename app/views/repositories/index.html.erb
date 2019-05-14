@@ -3,16 +3,8 @@
   <div class="row bg-light">
     <div class="col-12 col-sm-12 py-3">
       <div class="container">
-        <h3 class="text-left" style="padding: 2.8em 0px 0px 0px">Repositories</h3>
-      </div>
-    </div>
-  </div>
-
-  <div class="row bg-white">
-    <div class="col-12 col-sm-12 py-3">
-      <div class="container" style="padding-left: 0px;padding-right: 0px;">
-
-        <div class="row p-4">
+        <h2 class="text-left" style="padding: 2.8em 0px 0px 0px">Repositories</h3>
+        <div class="row p-3">
 
           <%= form_tag("orgs/repos", remote:true ,method: "get", id:"find_form" , class:"w-100") do  %>
           <div class="row">
@@ -58,10 +50,18 @@
 
 
         </div>
+      </div>
+    </div>
 
-        <div class="row p-4">
+  </div>
 
-          <div class="col-12 py-5 px-5 spinner_loading_ajax">
+  <div class="row bg-white">
+    <div class="col-12 col-sm-12 py-3">
+      <div class="container" style="padding-left: 0px;padding-right: 0px;">
+
+        <div class="row p-4 spinner_loading_ajax">
+
+          <div class="col-12 py-5 px-5">
             <div class="d-flex justify-content-center">
               <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
