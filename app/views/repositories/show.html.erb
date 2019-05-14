@@ -61,11 +61,11 @@
   </div>
   <div class="row bg-white">
       <div class="container py-5">
-          <div id="dashboard" class="tab-content col-sm-12">
+          <div id="dashboard" class="tab-content col-sm-12" >
             <%= high_chart("some_id", @chart) %>
           </div>
 
-          <div id="collaborators" class="tab-content col-sm-12 ">
+          <div id="collaborators" class="tab-content col-sm-12 " style="display:none;">
             <div class="card">
               <div class="card-body">
                 <div class="card-title text-center"> <strong>Collaborator</strong> </div>
@@ -95,8 +95,6 @@
               </div>
             </div>
       </div>
-
-
       <div class="row" style="padding: 1em 0px 0px 0px">
         <div class="col-12" align="right">
           <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
