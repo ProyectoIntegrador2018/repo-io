@@ -1,44 +1,44 @@
 <div class="container">
   <div class="row">
-      <div class="col-sm-12 py-5">
-          <h2 style="padding: 1em 0px 0px 0px"><%= @author.name %></h2>
-          <p ><%= @repository.name %></p>
-      </div>
+    <div class="col-sm-12 py-4">
+      <h2 style="padding: 2em 0px 0px 0px"><%= @author.name %></h2>
+      <p ><%= @repository.name %></p>
+    </div>
   </div>
 </div>
 
 <div class="bg-white">
-    <div class="container py-5">
-        <div class="row justify-content-center">
+  <div class="container py-5">
+    <div class="row justify-content-center">
 
-    		<div class="col-sm-12  ">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="card-title text-center"> <strong>Commits</strong> </div>
-                        <table class="table table-sm">
-                          <thead>
-                            <tr>
-                              <th scope="col">Message</th>
-                              <th scope="col">Additions</th>
-                              <th scope="col">Deletions</th>
-                              <th scope="col">Created</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                              <% @commits.each do |commit| %>
-                              <tr>
-                                <th> <%= commit.message %></th>
-                                <td><%= commit.additions %> </td>
-                                <td ><%= commit.deletions %> </td>
-                                <td> <%= commit.created %> </td>
-                              </tr>
-                              <%end%>
-                          </tbody>
-                        </table>
+      <div class="col-sm-12  ">
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title text-center"> <strong>Commits</strong> </div>
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">Message</th>
+                  <th scope="col">Additions</th>
+                  <th scope="col">Deletions</th>
+                  <th scope="col">Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @commits.each do |commit| %>
+                <tr>
+                  <th> <%= commit.message %></th>
+                  <td><%= commit.additions %> </td>
+                  <td ><%= commit.deletions %> </td>
+                  <td> <%= commit.created %> </td>
+                </tr>
+                <%end%>
+              </tbody>
+            </table>
 
-                    </div>
-                </div>
-            </div>
-    	</div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
