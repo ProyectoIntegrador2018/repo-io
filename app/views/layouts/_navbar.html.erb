@@ -1,9 +1,11 @@
 <% if current_user %>
-<ul class="navbar navbar-light bg-light fixed-top">
+<div>
+<ul class="navbar navbar-light bg-white fixed-top">
     <div class="container">
-        <a class="navbar-brand mb-0 h1 float-left" href="/repositories">Repo - io</a>
+      <div class="float-left">
+        <a href="/repositories" class="navbar-brand mb-0 h1">Repo <span style="color:#03A9F4">I</span>/<span style="color:#F44336">O</span></a>
+      </div>
         <div class=" float-right" >
-
           <div class="dropdown">
               <button class="btn btn-secondary dropdown-toggle h5" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                  <%= @username %>
@@ -15,4 +17,5 @@
         </div>
     </div>
 </ul>
+</div>
 <% end %>

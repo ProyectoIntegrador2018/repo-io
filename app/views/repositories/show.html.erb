@@ -1,134 +1,183 @@
-
-
-
+<div class="container">
+  <div class="row bg-light">
+    <div class="col-sm-12 py-5 ">
+      <h2  style="padding: 1em 0em 0px 0px"><%= @repository.name %></h2>
+      <p ><%= @repository.description %></p>
+      <p id="notification" class="text-center">
+        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        Please wait, the information is being stored ...
+      </p>
+    </div>
+  </div>
+</div>
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-12 py-5 px-5 ">
-            <h1 class="text-center" style="padding: 1em 0px 0px 0px"><%= @repository.name %></h1>
-            <p class="text-center"><%= @repository.description %></p>
-            <p id="notification" class="text-center">
-              <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-              Please wait, the information is being stored ...
-             </p>
-
-
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-4">
-                    <%= high_chart("some_id", @chart) %>
-        </div>
-        <div class="col-sm-7 offset-sm-1 ">
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title text-center"> <strong>Collaborator</strong> </div>
-
-                    <ul class="list-group" data-spy="scroll" style="overflow: scroll; max-height: 300px;">
-                        <% @authors.each do |author| %>
-                            <li class="list-group-item">
-                                 <div class="row">
-                                   <div class="col-3 offset-1">
-                                       <strong>Name:
-                                           <a href="/repositories/<%=@repository.id%>/profile/<%=author.id%>"><%=author.name%></a>
-                                       </strong>
-                                   </div>
-                                 <% if @from_date && @until_date %>
-                                     <div class="col-2"><strong>Additions:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) %> </div>
-                                     <div class="col-2"><strong>Deletions:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:deletions) %> </div>
-                                     <div class="col-2"><strong>Commits:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).count %> </div>
-                                 <% else %>
-                                     <div class="col-2"><strong>Additions:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:additions) %> </div>
-                                     <div class="col-2"><strong>Deletions:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:deletions) %> </div>
-                                     <div class="col-2"><strong>Commits:</strong> <%= @repository.commits.where(author_username: author.username).count %> </div>
-                                 <% end %>
-                                 </div>
-                            </li>
-                        <%end%>
-                    </ul>
-                </div>
-            </div>
-            <div class="row" style="padding: 1em 0px 0px 0px">
-                <div class="col-12" align="right">
-                    <%= form_tag(repository_path, method: :get) do %>
-                        <div class="row">
-                            <div class="col-4 offset-2">
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <label class="input-group-text" for="start_date">Start date</label>
-                                    </div>
-
-                                    <input class="form-control" as="date" type="date" id="from_date" name="from_date">
-                                </div>
-
-                            </div>
-                            <div class="col-4">
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <label class="input-group-text" for="end_date">End date</label>
-                                    </div>
-
-                                    <input class="form-control" as="date" type="date" id="until_date" name="until_date">
-                                </div>
-
-                            </div>
-                            <div class="col-1">
-                                 <input type="submit" name="commit" class="btn btn-info" value="Filter" data-disabled-with="Filter">
-                            </div>
-                        </div>
-                        </div>
-
-                    <% end %>
-                </div>
-                <div class="row" style="padding: 1em 0px 0px 0px">
-                    <div class="col-12" align="right">
-                        <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
-                          <input type="hidden" id="repo_id" name="repo_id" value="<%= @repository.id%>"></input>
-                          <button class="btn btn-info" type="submit"> Update Repo </button>
-                        <% end -%>
+  <div class="row">
+    <div class="col-12 col-sm-12">
+        <div class="container">
+              <%= form_tag(repository_path, method: :get) do %>
+              <div class="row">
+                <div class="col-4 offset-2">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" for="start_date">Start date</label>
                     </div>
+
+                    <input class="form-control" as="date" type="date" id="from_date" name="from_date">
+                  </div>
+
                 </div>
+                <div class="col-4">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" for="end_date">End date</label>
+                    </div>
+
+                    <input class="form-control" as="date" type="date" id="until_date" name="until_date">
+                  </div>
+
+                </div>
+                <div class="col-1">
+                  <input type="submit" name="commit" class="btn btn-secondary" value="Filter" data-disabled-with="Filter">
+                </div>
+              </div>
+              <% end %>
+          </div>
+
+      </div>
+
+  </div>
+  <div class="row">
+
+      <div class="container">
+          <ul class="nav nav-tabs col-4">
+              <li class="nav-item">
+                <span id="dashboard_tab" class="nav-link active"style="cursor:pointer"  >Dashboard</span>
+              </li>
+              <li class="nav-item">
+                <span id="collaborators_tab" class="nav-link" style="cursor:pointer"href="#">Colaborators</span>
+              </li>
+          </ul>
+
+      </div>
+
+  </div>
+  <div class="row bg-white">
+      <div class="container py-5">
+          <div id="dashboard" class="tab-content col-sm-12" >
+            <%= high_chart("some_id", @chart) %>
+          </div>
+
+          <div id="collaborators" class="tab-content col-sm-12 " style="display:none;">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title text-center"> <strong>Collaborator</strong> </div>
+                <table class="table table-sm">
+                    <thead>
+                       <tr>
+                         <th scope="col">Name</th>
+                         <th scope="col">Additions</th>
+                         <th scope="col">Deletions</th>
+                         <th scope="col">Commits</th>
+                       </tr>
+                    </thead>
+                    <tbody>
+                        <% @authors.each do |author| %>
+                        <tr>
+                          <th scope="row">
+                              <strong>
+                                  <a href="/repositories/<%=@repository.id%>/profile/<%=author.id%>"><%=author.name%></a>
+                              </strong>
+                          </th>
+                          <% if @from_date && @until_date %>
+                              <td><%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) %> </td>
+                              <td><%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:deletions) %> </td>
+                              <td><%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).count %> </td>
+                          <% else %>
+                              <td><%= @repository.commits.where(author_username: author.username).sum(&:additions) %> </td>
+                              <td><%= @repository.commits.where(author_username: author.username).sum(&:deletions) %> </td>
+                              <td><%= @repository.commits.where(author_username: author.username).count %> </td>
+                          <% end %>
+                        </tr>
+                        <% end %>
+                      </tbody>
+                </table>
+
+
+              </div>
             </div>
+      </div>
+      <div class="row" style="padding: 1em 0px 0px 0px">
+        <div class="col-12" align="right">
+          <%= form_tag('/repositories/'+@repository.id.to_s, method: :put) do -%>
+          <input type="hidden" id="repo_id" name="repo_id" value="<%= @repository.id%>"></input>
+          <button class="btn btn-secondary" type="submit"> Update Repo </button>
+          <% end -%>
         </div>
+      </div>
     </div>
+  </div>
+</div>
 </div>
 <script>
 
-    var interval = null;
-    var first_time = true;
-    function check_if_its_updating(){
-        $.ajax({
-            url: window.location.pathname + '/status',
-            dataType: "json",
-            success: function(data){
-                console.log(data);
-                if(data["updating"] == 'no'){
-                    clearInterval(interval);
-                    console.log("yei, UPDATE THE PAGE!!");
-                    if(!first_time){
-                        //Reload page
-                        location.reload(true);
-                    }
+  var interval = null;
+  var first_time = true;
+  function check_if_its_updating(){
+    $.ajax({
+      url: window.location.pathname + '/status',
+      dataType: "json",
+      success: function(data){
+        console.log(data);
+        if(data["updating"] == 'no'){
+          clearInterval(interval);
+          console.log("yei, UPDATE THE PAGE!!");
+          if(!first_time){
+            //Reload page
+            location.reload(true);
+          }
 
-                }else if(data['updating'] == 'yes'){
-                    console.log("Not yet..");
-                    first_time = false
-                    $("#notification").show()
+        }else if(data['updating'] == 'yes'){
+          console.log("Not yet..");
+          first_time = false
+          $("#notification").show()
 
-                }else{
-                    console.log(data);
-                }
+        }else{
+          console.log(data);
+        }
 
-            },
-            error: function(){
-                clearInterval(interval); // stop the interval
-                console.log("ERROR OCURRED");
+      },
+      error: function(){
+        clearInterval(interval); // stop the interval
+        console.log("ERROR OCURRED");
+      }
+    });
+
+  }
+
+  $(document).ready(function() {
+    $("#notification").hide()
+    interval = setInterval(check_if_its_updating,3000);
+
+
+
+    $('.nav-link').on('click',function(){
+        $(".active").removeClass("active");
+        $(this).addClass("active");
+
+        idTabClicked = $(this).attr('id');
+        idTabContent = idTabClicked.substring(0,idTabClicked.length - 4);
+        console.log(idTabContent);
+        $(".tab-content").each(function(index, elem){
+            if(elem.id == idTabContent){
+                console.log("Appear -> " + elem.id);
+
+                $(this).show();
+            }else{
+                console.log("Dissapaear -> " + elem.id);
+                $(this).hide();
             }
         });
 
-    }
-
-    $(document).ready(function() {
-            $("#notification").hide()
-            interval = setInterval(check_if_its_updating,3000);
     });
+  });
 </script>
