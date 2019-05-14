@@ -69,29 +69,38 @@
             <div class="card">
               <div class="card-body">
                 <div class="card-title text-center"> <strong>Collaborator</strong> </div>
+                <table class="table table-sm">
+                    <thead>
+                       <tr>
+                         <th scope="col">Name</th>
+                         <th scope="col">Additions</th>
+                         <th scope="col">Deletions</th>
+                         <th scope="col">Commits</th>
+                       </tr>
+                    </thead>
+                    <tbody>
+                        <% @authors.each do |author| %>
+                        <tr>
+                          <th scope="row">
+                              <strong>
+                                  <a href="/repositories/<%=@repository.id%>/profile/<%=author.id%>"><%=author.name%></a>
+                              </strong>
+                          </th>
+                          <% if @from_date && @until_date %>
+                              <td><%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) %> </td>
+                              <td><%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:deletions) %> </td>
+                              <td><%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).count %> </td>
+                          <% else %>
+                              <td><%= @repository.commits.where(author_username: author.username).sum(&:additions) %> </td>
+                              <td><%= @repository.commits.where(author_username: author.username).sum(&:deletions) %> </td>
+                              <td><%= @repository.commits.where(author_username: author.username).count %> </td>
+                          <% end %>
+                        </tr>
+                        <% end %>
+                      </tbody>
+                </table>
 
-                <ul class="list-group" data-spy="scroll" style="overflow: scroll; max-height: 300px;">
-                  <% @authors.each do |author| %>
-                  <li class="list-group-item">
-                    <div class="row">
-                      <div class="col-3 offset-1">
-                        <strong>Name:
-                          <a href="/repositories/<%=@repository.id%>/profile/<%=author.id%>"><%=author.name%></a>
-                        </strong>
-                      </div>
-                      <% if @from_date && @until_date %>
-                      <div class="col-2"><strong>Additions:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:additions) %> </div>
-                      <div class="col-2"><strong>Deletions:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).sum(&:deletions) %> </div>
-                      <div class="col-2"><strong>Commits:</strong> <%= @repository.commits.where(author_username: author.username).with_date(@from_date, @until_date).count %> </div>
-                      <% else %>
-                      <div class="col-2"><strong>Additions:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:additions) %> </div>
-                      <div class="col-2"><strong>Deletions:</strong> <%= @repository.commits.where(author_username: author.username).sum(&:deletions) %> </div>
-                      <div class="col-2"><strong>Commits:</strong> <%= @repository.commits.where(author_username: author.username).count %> </div>
-                      <% end %>
-                    </div>
-                  </li>
-                  <%end%>
-                </ul>
+                
               </div>
             </div>
       </div>
