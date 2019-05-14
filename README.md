@@ -5,6 +5,9 @@
 
 Web platform used to review and display in an elegant form the contributions done to a Github repository.
 
+## Demo
+https://youtu.be/zbuAqPNC_bs
+
 ## Table of contents
 
 * [Client Details](#client-details)
